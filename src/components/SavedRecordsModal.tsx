@@ -241,6 +241,11 @@ export const SavedRecordsModal: React.FC<SavedRecordsModalProps> = ({
                             <span className="text-emerald-700 font-semibold flex items-center gap-1">
                               <ShieldCheck className="w-3 h-3" /> NKDA
                             </span>
+                          ) : record.patient.allergies.toLowerCase().includes('unknown') ? (
+                            <span className="text-amber-700 font-semibold flex items-center gap-1" title={record.patient.allergies}>
+                              <AlertTriangle className="w-3 h-3 text-amber-600" />
+                              {record.patient.allergies}
+                            </span>
                           ) : (
                             <span className="text-rose-700 font-bold flex items-center gap-1" title={record.patient.allergies}>
                               <AlertTriangle className="w-3 h-3 text-rose-600" />

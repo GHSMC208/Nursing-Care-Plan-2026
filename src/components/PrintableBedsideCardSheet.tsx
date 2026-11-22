@@ -101,7 +101,7 @@ export function splitPatientName(fullName?: string): { line1: string; line2: str
 
 // Helper for allergy display
 export function formatAllergy(allergy?: string): string {
-  if (!allergy || !allergy.trim()) return 'NKDA';
+  if (!allergy || !allergy.trim()) return 'Unknown Drug Allergy';
   const clean = allergy.trim();
   if (/^nkda\s*(\(no\s+known\s+drug\s+allergies\))?$/i.test(clean) || /^no\s+known\s+drug\s+allergies$/i.test(clean)) {
     return 'NKDA';
@@ -111,7 +111,7 @@ export function formatAllergy(allergy?: string): string {
 
 // Dedicated helper for ID tag allergy: strictly outputs NKDA instead of verbose phrases
 export function formatIdTagAllergy(allergy?: string): string {
-  if (!allergy || !allergy.trim()) return 'NKDA';
+  if (!allergy || !allergy.trim()) return 'Unknown Drug Allergy';
   const clean = allergy.trim();
   if (/no\s+known\s+drug\s+allergies/i.test(clean) || /^nkda/i.test(clean) || /^nka/i.test(clean)) {
     return 'NKDA';
@@ -202,12 +202,16 @@ export const IdTagCard: React.FC<IdTagCardProps> = ({
           </span>
         </div>
 
-        {/* Row 4: Caring Doctor & Allergy Warning (NKDA only, no verbose bracket text) */}
-        <div className="flex items-center justify-between gap-1 text-[9.2px] font-bold text-black tracking-tight leading-none">
-          <span className="truncate max-w-[35mm]">
+        {/* Row 4: Caring Doctor & Allergy Warning */}
+        <div
+          className={`flex items-center justify-between gap-1 font-bold text-black tracking-tight leading-none ${
+            allergyDisplay.length > 14 ? 'text-[8.2px]' : 'text-[9.2px]'
+          }`}
+        >
+          <span className="truncate flex-1 min-w-0">
             C/O <strong className="font-black text-[#002878]">{doctor.full}</strong>
           </span>
-          <span className="truncate max-w-[28mm] text-right font-black text-red-700 uppercase">
+          <span className="truncate max-w-[39mm] shrink-0 text-right font-black text-red-700 uppercase">
             ALLERGY: {allergyDisplay}
           </span>
         </div>

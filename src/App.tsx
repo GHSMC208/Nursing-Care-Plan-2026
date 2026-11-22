@@ -50,7 +50,7 @@ const BLANK_INITIAL_PATIENT: PatientDemographics = {
   caringDoctor: '',
   hospitalName: 'Salmaniya Medical Complex',
   departmentUnit: '',
-  allergies: 'NKDA',
+  allergies: 'Unknown Drug Allergy',
 };
 
 const BLANK_INITIAL_CARE_PLAN_1: NursingCarePlan = {
@@ -129,7 +129,7 @@ export default function App() {
               bedNumber,
               wardAndBedNumber: r.patient.wardAndBedNumber || (wardNumber && bedNumber ? `${wardNumber}, Bed ${bedNumber}` : wardNumber || bedNumber),
               hospitalName: r.patient.hospitalName || 'Salmaniya Medical Complex',
-              allergies: r.patient.allergies !== undefined ? r.patient.allergies : 'NKDA (No Known Drug Allergies)',
+              allergies: r.patient.allergies !== undefined ? r.patient.allergies : 'Unknown Drug Allergy',
             },
           };
         });
@@ -469,6 +469,11 @@ export default function App() {
                     <span className="text-xs text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1">
                       <ShieldCheck className="w-3 h-3 text-emerald-600" />
                       NKDA
+                    </span>
+                  ) : patient.allergies.toLowerCase().includes('unknown') ? (
+                    <span className="text-xs text-amber-800 font-semibold bg-amber-50 px-2 py-0.5 rounded border border-amber-200 flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3 text-amber-600" />
+                      {patient.allergies}
                     </span>
                   ) : (
                     <span

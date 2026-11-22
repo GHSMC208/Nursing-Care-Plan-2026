@@ -36,6 +36,7 @@ import {
 const PRESET_NATIONALITIES = ['Bahraini', 'Indian', 'Bangladish', 'Pakistan', 'Philippines'];
 
 const COMMON_ALLERGIES = [
+  'Unknown Drug Allergy',
   'NKDA',
   'Penicillin',
   'Sulfa Drugs',
@@ -87,13 +88,24 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
   const handleAllergyPresetClick = (allergy: string) => {
     const current = (patient.allergies || '').trim();
 
-    if (allergy === 'NKDA (No Known Drug Allergies)') {
-      handleFieldChange('allergies', 'NKDA (No Known Drug Allergies)');
+    if (allergy === 'Unknown Drug Allergy') {
+      handleFieldChange('allergies', 'Unknown Drug Allergy');
       return;
     }
 
-    // If current was NKDA or empty, replace with this allergy
-    if (!current || current.toLowerCase().includes('nkda') || current.toLowerCase().includes('no known')) {
+    if (allergy === 'NKDA' || allergy === 'NKDA (No Known Drug Allergies)') {
+      handleFieldChange('allergies', 'NKDA');
+      return;
+    }
+
+    // If current was Unknown, NKDA, or empty, replace with this allergy
+    const lowerCurrent = current.toLowerCase();
+    if (
+      !current ||
+      lowerCurrent.includes('unknown') ||
+      lowerCurrent.includes('nkda') ||
+      lowerCurrent.includes('no known')
+    ) {
       handleFieldChange('allergies', allergy);
       return;
     }
@@ -104,7 +116,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
 
     if (existingIndex >= 0) {
       items.splice(existingIndex, 1);
-      handleFieldChange('allergies', items.length > 0 ? items.join(', ') : 'NKDA (No Known Drug Allergies)');
+      handleFieldChange('allergies', items.length > 0 ? items.join(', ') : 'Unknown Drug Allergy');
     } else {
       items.push(allergy);
       handleFieldChange('allergies', items.join(', '));
@@ -116,7 +128,12 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
     (patient.allergies?.toLowerCase().includes('nkda') ||
       patient.allergies?.toLowerCase().includes('no known'));
 
-  const hasSpecificAllergies = Boolean(patient.allergies?.trim()) && !isNkda;
+  const isUnknownAllergy =
+    Boolean(patient.allergies?.trim()) &&
+    !isNkda &&
+    patient.allergies?.toLowerCase().includes('unknown');
+
+  const hasSpecificAllergies = Boolean(patient.allergies?.trim()) && !isNkda && !isUnknownAllergy;
 
   const setTodayAdmission = () => {
     const today = new Date().toISOString().split('T')[0];
@@ -461,6 +478,11 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                     <ShieldCheck className="w-3.5 h-3.5" />
                     NKDA Confirmed
                   </span>
+                ) : isUnknownAllergy ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
+                    Unknown Drug Allergy
+                  </span>
                 ) : hasSpecificAllergies ? (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold border border-rose-300 animate-pulse">
                     <ShieldAlert className="w-3.5 h-3.5" />
@@ -478,7 +500,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                 <input
                   id="patient-allergies-input"
                   type="text"
-                  placeholder="e.g., NKDA (No Known Drug Allergies) or Penicillin (Anaphylaxis), Morphine (Severe Nausea)"
+                  placeholder="e.g., Unknown Drug Allergy, NKDA, or Penicillin (Anaphylaxis), Morphine"
                   value={patient.allergies || ''}
                   onChange={(e) => handleFieldChange('allergies', e.target.value)}
                   className={`w-full px-3.5 py-2.5 bg-white border rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 transition-all placeholder:text-slate-400 ${
@@ -486,6 +508,8 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                       ? 'border-rose-300 text-rose-900 focus:ring-rose-500/20 focus:border-rose-500'
                       : isNkda
                       ? 'border-emerald-300 text-emerald-900 focus:ring-emerald-500/20 focus:border-emerald-500'
+                      : isUnknownAllergy
+                      ? 'border-amber-300 text-amber-950 focus:ring-amber-500/20 focus:border-amber-500'
                       : 'border-slate-300 text-slate-900 focus:ring-blue-500/20 focus:border-blue-600'
                   }`}
                 />
@@ -497,13 +521,22 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                   <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                     Quick Clinical Presets & Common Allergens:
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => handleFieldChange('allergies', 'NKDA (No Known Drug Allergies)')}
-                    className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline flex items-center gap-1"
-                  >
-                    <ShieldCheck className="w-3 h-3" /> Set NKDA
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleFieldChange('allergies', 'Unknown Drug Allergy')}
+                      className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline flex items-center gap-1"
+                    >
+                      <AlertTriangle className="w-3 h-3" /> Set Unknown
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleFieldChange('allergies', 'NKDA')}
+                      className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline flex items-center gap-1"
+                    >
+                      <ShieldCheck className="w-3 h-3" /> Set NKDA
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-1.5 items-center">
@@ -512,6 +545,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                       patient.allergies &&
                       patient.allergies.toLowerCase().includes(allergen.toLowerCase());
                     const isNkdaBtn = allergen.startsWith('NKDA');
+                    const isUnknownBtn = allergen === 'Unknown Drug Allergy';
 
                     return (
                       <button
@@ -522,9 +556,13 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                           isSelected
                             ? isNkdaBtn
                               ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                              : isUnknownBtn
+                              ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
                               : 'bg-rose-600 text-white border-rose-600 shadow-xs'
                             : isNkdaBtn
                             ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                            : isUnknownBtn
+                            ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
                             : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:border-slate-400'
                         }`}
                       >
@@ -805,7 +843,12 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                     {isNkda ? (
                       <span className="text-emerald-400 flex items-center gap-1">
                         <ShieldCheck className="w-3.5 h-3.5" />
-                        {patient.allergies || 'NKDA (No Known Drug Allergies)'}
+                        {patient.allergies || 'NKDA'}
+                      </span>
+                    ) : isUnknownAllergy ? (
+                      <span className="text-amber-400 flex items-center gap-1">
+                        <AlertTriangle className="w-3.5 h-3.5" />
+                        {patient.allergies || 'Unknown Drug Allergy'}
                       </span>
                     ) : hasSpecificAllergies ? (
                       <span className="text-rose-400 flex items-center gap-1">
@@ -814,7 +857,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                       </span>
                     ) : (
                       <span className="text-slate-400 italic">
-                        — No allergy status entered —
+                        — Unknown Drug Allergy —
                       </span>
                     )}
                   </div>
