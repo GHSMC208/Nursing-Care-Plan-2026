@@ -93,8 +93,8 @@ export default function App() {
   // Care Plan 2 (Priority 2)
   const [carePlan2, setCarePlan2] = useState<NursingCarePlan>(BLANK_INITIAL_CARE_PLAN_2);
 
-  // Active Tab for editing on mobile/single view: 'demographics' | 'bedside-sheet' | 'plan1' | 'plan2' | 'split' | 'preview'
-  const [activeTab, setActiveTab] = useState<'demographics' | 'bedside-sheet' | 'plan1' | 'plan2' | 'split' | 'preview'>('demographics');
+  // Active Tab for editing on mobile/single view: 'demographics' | 'bedside-sheet' | 'plan1' | 'plan2' | 'split'
+  const [activeTab, setActiveTab] = useState<'demographics' | 'bedside-sheet' | 'plan1' | 'plan2' | 'split'>('demographics');
 
   // NANDA Search Modal State
   const [nandaModalOpen, setNandaModalOpen] = useState(false);
@@ -304,14 +304,19 @@ export default function App() {
     showToast(`Saved care plan for ${patient.fullName}`);
   };
 
-  // Direct print trigger
-  const handleDirectPrintCarePlans = () => {
-    setPrintDocType('careplans');
-    setTimeout(() => {
-      window.print();
-    }, 60);
+  // Unified Print & Preview modal opener (context-aware based on current tab)
+  const handleOpenPrintPreview = (forcedDocType?: PrintDocumentType) => {
+    if (forcedDocType) {
+      setPrintDocType(forcedDocType);
+    } else if (activeTab === 'plan1' || activeTab === 'plan2' || activeTab === 'split') {
+      setPrintDocType('careplans');
+    } else if (activeTab === 'bedside-sheet') {
+      setPrintDocType('bedside');
+    }
+    setPrintPreviewOpen(true);
   };
 
+  // Direct print trigger for Bedside Sheet
   const handleDirectPrintBedside = () => {
     setPrintDocType('bedside');
     setTimeout(() => {
@@ -408,34 +413,12 @@ export default function App() {
             <button
               id="preview-print-modal-btn"
               type="button"
-              onClick={() => setPrintPreviewOpen(true)}
-              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs shadow-xs transition-all flex items-center gap-1.5"
-              title="Open Printable Care Plans & Bedside Card Preview"
-            >
-              <Eye className="w-4 h-4 text-blue-400" />
-              <span className="hidden sm:inline">Print Preview</span>
-            </button>
-
-            <button
-              id="instant-bedside-print-btn"
-              type="button"
-              onClick={handleDirectPrintBedside}
-              className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5"
-              title="Print Bedside & Door Card Sheet (A4 Landscape Layout)"
-            >
-              <Tag className="w-3.5 h-3.5" />
-              <span>Print Bedside Sheet</span>
-            </button>
-
-            <button
-              id="instant-print-btn"
-              type="button"
-              onClick={handleDirectPrintCarePlans}
-              className="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all flex items-center gap-1.5"
-              title="Send Care Plans directly to browser print / save PDF"
+              onClick={() => handleOpenPrintPreview()}
+              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all flex items-center gap-1.5"
+              title="Open unified A4 Print Preview & Printing for Bedside Sheet and Care Plans"
             >
               <Printer className="w-4 h-4" />
-              <span className="hidden sm:inline">Print Care Plans</span>
+              <span>Print & Preview</span>
             </button>
           </div>
         </div>
@@ -568,21 +551,6 @@ export default function App() {
               <Columns className="w-3.5 h-3.5" />
               <span>Dual Split View</span>
             </button>
-
-            <button
-              id="nav-tab-preview"
-              type="button"
-              onClick={() => setActiveTab('preview')}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-md font-semibold transition-all ${
-                activeTab === 'preview'
-                  ? 'bg-blue-600 text-white shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-              title="View full A4 Printable Sheets"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>A4 Print View</span>
-            </button>
           </div>
         </div>
 
@@ -592,27 +560,10 @@ export default function App() {
             <PatientDemographicsForm
               patient={patient}
               onChange={setPatient}
-              onLoadSample={handleLoadSample}
               onReset={handleClearDemographics}
-              onOpenPrintPreview={(docType) => {
-                setPrintDocType(docType);
-                setPrintPreviewOpen(true);
-              }}
             />
 
-            <div className="flex justify-between items-center gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setPrintDocType('bedside');
-                  setActiveTab('bedside-sheet');
-                }}
-                className="px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs rounded-lg shadow-xs transition-all flex items-center gap-2"
-              >
-                <Tag className="w-4 h-4 text-emerald-600" />
-                <span>View Bedside & Door Card Sheet (A4)</span>
-              </button>
-
+            <div className="flex justify-end items-center gap-3">
               <button
                 type="button"
                 onClick={() => setActiveTab('plan1')}
@@ -648,47 +599,11 @@ export default function App() {
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowBedsideDimensions(!showBedsideDimensions)}
-                  className={`px-3 py-2 rounded-lg text-xs font-bold transition-all border flex items-center gap-1.5 ${
-                    showBedsideDimensions
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs'
-                      : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200'
-                  }`}
-                  title="Toggle 9x7cm and 1.8x6.7cm dimension markers"
-                >
-                  <Tag className="w-3.5 h-3.5" />
-                  <span>{showBedsideDimensions ? 'Dimension Rulers: On' : 'Dimension Rulers: Off'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleLoadSample('sample-yusuf')}
-                  className="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
-                  title="Load exact sample data from the attached file"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Load Yusuf Yaqoob Preset</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPrintDocType('bedside');
-                    setPrintPreviewOpen(true);
-                  }}
-                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs rounded-lg shadow-xs transition-all flex items-center gap-1.5"
-                >
-                  <Eye className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Interactive Zoom Preview</span>
-                </button>
-
-                <button
-                  type="button"
                   onClick={handleDirectPrintBedside}
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-xs hover:shadow transition-all flex items-center gap-1.5"
                 >
                   <Printer className="w-4 h-4" />
-                  <span>Print A4 Bedside Sheet</span>
+                  <span>Print Bedside Sheet</span>
                 </button>
               </div>
             </div>
@@ -846,157 +761,6 @@ export default function App() {
                 onSwapWithOtherPlan={handleSwapPlans}
                 onClearPlan={handleClearPlan2}
               />
-            </div>
-          </div>
-        )}
-
-        {/* View Section 5: Inline A4 Print Preview */}
-        {activeTab === 'preview' && (
-          <div className="space-y-6">
-            {/* Control Bar for Print View */}
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-                <span className="text-xs font-bold text-slate-800">
-                  Standard A4 (210 × 297mm) Inpatient Documentation Sheets
-                </span>
-                <span className="text-[11px] text-slate-500 font-mono hidden sm:inline">
-                  • Care Plans (Portrait) & Bedside Cards (Landscape)
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <div className="bg-slate-100 p-1 rounded-lg border border-slate-200 flex items-center text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setPrintDocType('bedside')}
-                    className={`px-3 py-1 rounded-md font-semibold transition-all ${
-                      printDocType === 'bedside' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'text-slate-600'
-                    }`}
-                  >
-                    Bedside Sheet (A4)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPrintDocType('careplans')}
-                    className={`px-3 py-1 rounded-md font-semibold transition-all ${
-                      printDocType === 'careplans' ? 'bg-blue-600 text-white shadow-xs font-bold' : 'text-slate-600'
-                    }`}
-                  >
-                    Care Plans (A4)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPrintDocType('both_types')}
-                    className={`px-3 py-1 rounded-md font-semibold transition-all ${
-                      printDocType === 'both_types' ? 'bg-slate-900 text-white shadow-xs font-bold' : 'text-slate-600'
-                    }`}
-                  >
-                    All Documents
-                  </button>
-                </div>
-
-                {printDocType === 'careplans' && (
-                  <div className="bg-slate-100 p-1 rounded-lg border border-slate-200 flex items-center text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setPrintScope('both')}
-                      className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
-                        printScope === 'both' ? 'bg-white text-blue-700 shadow-xs font-bold' : 'text-slate-600'
-                      }`}
-                    >
-                      Both Plans
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPrintScope('plan1')}
-                      className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
-                        printScope === 'plan1' ? 'bg-white text-blue-700 shadow-xs font-bold' : 'text-slate-600'
-                      }`}
-                    >
-                      Plan 1
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPrintScope('plan2')}
-                      className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
-                        printScope === 'plan2' ? 'bg-white text-blue-700 shadow-xs font-bold' : 'text-slate-600'
-                      }`}
-                    >
-                      Plan 2
-                    </button>
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (printDocType === 'bedside') handleDirectPrintBedside();
-                    else handleDirectPrintCarePlans();
-                  }}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-xs transition-all flex items-center gap-1.5"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span>Print Selected Sheets</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Rendered A4 sheets */}
-            <div className="space-y-8 flex flex-col items-center">
-              {/* Bedside Sheet */}
-              {(printDocType === 'bedside' || printDocType === 'both_types') && (
-                <div className="w-full">
-                  <div className="text-xs font-bold text-emerald-700 mb-2 flex items-center justify-between px-1">
-                    <span>DOCUMENT: INPATIENT BEDSIDE, DOOR & KARDEX CARDS (A4 LANDSCAPE)</span>
-                    <span className="font-mono text-[11px]">All 6 Cards Fully Visible & Dimension Checked</span>
-                  </div>
-                  <ResponsiveBedsideSheetView
-                    patient={patient}
-                    showDimensionBadges={showBedsideDimensions}
-                    onToggleDimensions={() => setShowBedsideDimensions(!showBedsideDimensions)}
-                  />
-                </div>
-              )}
-
-              {/* Care Plans */}
-              {(printDocType === 'careplans' || printDocType === 'both_types') && (
-                <>
-                  {(printScope === 'both' || printScope === 'plan1') && (
-                    <div className="w-full max-w-[210mm]">
-                      <div className="text-xs font-bold text-slate-500 mb-2 flex items-center justify-between px-1">
-                        <span>PAGE 1: NURSING CARE PLAN #1 (A4 PORTRAIT)</span>
-                        <span className="text-blue-700 font-mono text-[11px]">Upper-Right Patient Label Included</span>
-                      </div>
-                      <div className="bg-white rounded-xs shadow-md border border-slate-200 overflow-hidden">
-                        <PrintableCarePlan
-                          patient={patient}
-                          carePlan={carePlan1}
-                          planNumber={1}
-                          totalPlans={printScope === 'both' ? 2 : 1}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {(printScope === 'both' || printScope === 'plan2') && (
-                    <div className="w-full max-w-[210mm]">
-                      <div className="text-xs font-bold text-slate-500 mb-2 flex items-center justify-between px-1">
-                        <span>PAGE 2: NURSING CARE PLAN #2 (A4 PORTRAIT)</span>
-                        <span className="text-blue-700 font-mono text-[11px]">Upper-Right Patient Label Included</span>
-                      </div>
-                      <div className="bg-white rounded-xs shadow-md border border-slate-200 overflow-hidden">
-                        <PrintableCarePlan
-                          patient={patient}
-                          carePlan={carePlan2}
-                          planNumber={2}
-                          totalPlans={printScope === 'both' ? 2 : 1}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
             </div>
           </div>
         )}
