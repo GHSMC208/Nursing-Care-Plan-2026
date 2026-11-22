@@ -1,0 +1,8 @@
+{
+  "name": "Remix Inpatient Nursing Care Plan Generator",
+  "description": "Create, customize, and print clinical dual-nursing care plans and A4 bedside/door/file identification cards with exact physical dimensions (9x7 cm cards & 1.6x6.5 cm ID tags) for inpatient care.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
