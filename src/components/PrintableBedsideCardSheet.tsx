@@ -548,21 +548,112 @@ export const BedsideDoctorContent: React.FC<{ doctor?: string }> = ({ doctor }) 
   );
 };
 
-export const PrintableBedsideCardSheet: React.FC<PrintableBedsideCardSheetProps> = ({
-  patient,
-  isPrintOnly = false,
-  showDimensionBadges = false,
-}) => {
+function computeSingleLineFitSize(
+  text: string,
+  maxSize: number,
+  minSize: number,
+  maxWidthPx: number
+): number {
+  if (!text.trim()) return maxSize;
+  const fontFamily = getSansFontFamily();
+  const widthAt100 = measureTextWidthAt100(text, fontFamily);
+  const fitSize = (maxWidthPx / widthAt100) * 100;
+  const clamped = Math.max(minSize, Math.min(maxSize, fitSize));
+  return Math.floor(clamped * 2) / 2;
+}
+
+export const FileAttachedCardContent: React.FC<{ patient: PatientDemographics }> = ({ patient }) => {
   const shortDate = formatShortDate(patient.dateOfAdmission);
   const wardBed = formatWardBed(patient);
   const doctor = getDoctorDisplay(patient.caringDoctor);
-  const patientName = patient.fullName || 'Patient Name';
+  const patientName = (patient.fullName || 'Patient Name').trim().toUpperCase();
   const cprNumber = patient.idNumber || '—';
   const ageDisplay = patient.age ? `${patient.age} YRS` : '— YRS';
   const sexCode = patient.sex ? (patient.sex.toUpperCase().startsWith('M') ? 'M' : 'F') : '—';
   const nationalityDisplay = (patient.nationality || 'BAHRAINI').toUpperCase();
   const allergyDisplay = formatAllergy(patient.allergies);
 
+  const sizes = useMemo(() => {
+    const innerWidth = 310;
+    return {
+      header: computeSingleLineFitSize(`${shortDate}   ${wardBed.toUpperCase()}`, 16.5, 12, innerWidth),
+      name: computeSingleLineFitSize(patientName, 25, 14, innerWidth),
+      cpr: computeSingleLineFitSize(`CPR ${cprNumber}`, 20.5, 14, innerWidth),
+      demographics: computeSingleLineFitSize(
+        `${ageDisplay} • (${sexCode}) • ${nationalityDisplay}`,
+        18.5,
+        13,
+        innerWidth
+      ),
+      doctor: computeSingleLineFitSize(`C/O ${doctor.full}`, 18.5, 13, innerWidth),
+      allergy: computeSingleLineFitSize(`ALLERGY: ${allergyDisplay.toUpperCase()}`, 18.5, 13, innerWidth),
+    };
+  }, [shortDate, wardBed, patientName, cprNumber, ageDisplay, sexCode, nationalityDisplay, doctor.full, allergyDisplay]);
+
+  return (
+    <>
+      {/* Header Row: Date & Ward/Bed */}
+      <div
+        className="flex items-center justify-between font-black text-black border-b-[1.5px] border-slate-300 pb-1 px-0.5 leading-none"
+        style={{ fontSize: `${sizes.header}px` }}
+      >
+        <span className="font-mono whitespace-nowrap">{shortDate}</span>
+        <span className="font-extrabold text-[#002878] uppercase whitespace-nowrap">{wardBed}</span>
+      </div>
+
+      {/* Center Info - enlarged & auto-fitted to fill 9×7 cm card */}
+      <div className="flex flex-col justify-evenly flex-1 py-1 text-center">
+        <h2
+          className="font-black text-black tracking-tight leading-none uppercase whitespace-nowrap overflow-hidden text-ellipsis"
+          style={{ fontSize: `${sizes.name}px` }}
+        >
+          {patientName}
+        </h2>
+
+        <div
+          className="font-bold text-black tracking-wide leading-none whitespace-nowrap"
+          style={{ fontSize: `${sizes.cpr}px` }}
+        >
+          <span>CPR </span>
+          <strong className="font-mono font-black ml-1">{cprNumber}</strong>
+        </div>
+
+        <div
+          className="font-bold text-black tracking-tight leading-none whitespace-nowrap"
+          style={{ fontSize: `${sizes.demographics}px` }}
+        >
+          <span>{ageDisplay}</span>
+          <span className="mx-1.5 font-black">•</span>
+          <strong className="font-black">({sexCode})</strong>
+          <span className="mx-1.5 font-black">•</span>
+          <strong className="font-black text-slate-800 uppercase">{nationalityDisplay}</strong>
+        </div>
+
+        <div
+          className="font-bold text-black leading-none whitespace-nowrap overflow-hidden text-ellipsis"
+          style={{ fontSize: `${sizes.doctor}px` }}
+        >
+          <span>C/O </span>
+          <strong className="font-black text-[#002878]">{doctor.full}</strong>
+        </div>
+
+        <div
+          className="font-bold text-black tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis"
+          style={{ fontSize: `${sizes.allergy}px` }}
+        >
+          <span>ALLERGY: </span>
+          <strong className="font-black uppercase text-red-700">{allergyDisplay}</strong>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export const PrintableBedsideCardSheet: React.FC<PrintableBedsideCardSheetProps> = ({
+  patient,
+  isPrintOnly = false,
+  showDimensionBadges = false,
+}) => {
   return (
     <div
       id="printable-bedside-label-sheet"
@@ -647,49 +738,15 @@ export const PrintableBedsideCardSheet: React.FC<PrintableBedsideCardSheetProps>
         {/* Fields: [date of admission, ward numer, bed number, patient name, ID, age, sex, nationality, caring Dr, allergy] */}
         <div
           id="card-file-attached-1"
-          className="relative border-b-[3px] border-[#002878] p-3 flex flex-col justify-between overflow-hidden bg-white box-border font-sans"
+          className="relative border-b-[3px] border-[#002878] p-2.5 flex flex-col justify-between overflow-hidden bg-white box-border font-sans"
           style={{ width: '90mm', height: '70mm', minWidth: '90mm', maxWidth: '90mm', minHeight: '70mm', maxHeight: '70mm', boxSizing: 'border-box' }}
         >
           {showDimensionBadges && (
-            <span className="absolute top-1.5 right-1.5 text-[8px] font-mono font-bold bg-blue-50 text-blue-900 px-1 py-0.2 rounded border border-blue-200 no-print z-10">
+            <span className="absolute top-1 right-1 text-[8px] font-mono font-bold bg-blue-50 text-blue-900 px-1 py-0.2 rounded border border-blue-200 no-print z-10">
               9 × 7 cm
             </span>
           )}
-          {/* Header Row: Date & Ward/Bed */}
-          <div className="flex items-center justify-between text-[13px] font-black text-black border-b border-slate-300 pb-0.5 px-0.5">
-            <span className="font-mono">{shortDate}</span>
-            <span className="font-bold text-[#002878] uppercase">{wardBed}</span>
-          </div>
-
-          {/* Center Info - suitably scaled to fill 9x7cm */}
-          <div className="flex flex-col justify-evenly flex-1 py-1 text-center space-y-1">
-            <h2 className="text-[16.5px] font-black text-black tracking-tight leading-tight uppercase truncate">
-              {patientName}
-            </h2>
-
-            <div className="text-[14px] font-bold text-black tracking-wide leading-none">
-              <span>CPR </span>
-              <strong className="font-mono font-black ml-1">{cprNumber}</strong>
-            </div>
-
-            <div className="text-[13px] font-bold text-black tracking-wide leading-none">
-              <span>{ageDisplay}</span>
-              <span className="mx-1.5 font-black">•</span>
-              <strong className="font-black">({sexCode})</strong>
-              <span className="mx-1.5 font-black">•</span>
-              <strong className="font-black text-slate-800 uppercase">{nationalityDisplay}</strong>
-            </div>
-
-            <div className="text-[13px] font-bold text-black leading-none truncate">
-              <span>C/O </span>
-              <strong className="font-black text-[#002878]">{doctor.full}</strong>
-            </div>
-
-            <div className="text-[13px] font-bold text-black tracking-tight leading-none pt-0.5">
-              <span>ALLERGY: </span>
-              <strong className="font-black uppercase text-red-700">{allergyDisplay}</strong>
-            </div>
-          </div>
+          <FileAttachedCardContent patient={patient} />
         </div>
 
         {/* ========================================================= */}
@@ -733,49 +790,15 @@ export const PrintableBedsideCardSheet: React.FC<PrintableBedsideCardSheetProps>
         {/* Fields: [date of admission, ward numer, bed number, patient name, ID, age, sex, nationality, caring Dr, allergy] */}
         <div
           id="card-file-attached-2"
-          className="relative p-3 flex flex-col justify-between overflow-hidden bg-white box-border font-sans"
+          className="relative p-2.5 flex flex-col justify-between overflow-hidden bg-white box-border font-sans"
           style={{ width: '90mm', height: '70mm', minWidth: '90mm', maxWidth: '90mm', minHeight: '70mm', maxHeight: '70mm', boxSizing: 'border-box' }}
         >
           {showDimensionBadges && (
-            <span className="absolute top-1.5 right-1.5 text-[8px] font-mono font-bold bg-blue-50 text-blue-900 px-1 py-0.2 rounded border border-blue-200 no-print z-10">
+            <span className="absolute top-1 right-1 text-[8px] font-mono font-bold bg-blue-50 text-blue-900 px-1 py-0.2 rounded border border-blue-200 no-print z-10">
               9 × 7 cm
             </span>
           )}
-          {/* Header Row: Date & Ward/Bed */}
-          <div className="flex items-center justify-between text-[13px] font-black text-black border-b border-slate-300 pb-0.5 px-0.5">
-            <span className="font-mono">{shortDate}</span>
-            <span className="font-bold text-[#002878] uppercase">{wardBed}</span>
-          </div>
-
-          {/* Center Info - suitably scaled to fill 9x7cm */}
-          <div className="flex flex-col justify-evenly flex-1 py-1 text-center space-y-1">
-            <h2 className="text-[16.5px] font-black text-black tracking-tight leading-tight uppercase truncate">
-              {patientName}
-            </h2>
-
-            <div className="text-[14px] font-bold text-black tracking-wide leading-none">
-              <span>CPR </span>
-              <strong className="font-mono font-black ml-1">{cprNumber}</strong>
-            </div>
-
-            <div className="text-[13px] font-bold text-black tracking-wide leading-none">
-              <span>{ageDisplay}</span>
-              <span className="mx-1.5 font-black">•</span>
-              <strong className="font-black">({sexCode})</strong>
-              <span className="mx-1.5 font-black">•</span>
-              <strong className="font-black text-slate-800 uppercase">{nationalityDisplay}</strong>
-            </div>
-
-            <div className="text-[13px] font-bold text-black leading-none truncate">
-              <span>C/O </span>
-              <strong className="font-black text-[#002878]">{doctor.full}</strong>
-            </div>
-
-            <div className="text-[13px] font-bold text-black tracking-tight leading-none pt-0.5">
-              <span>ALLERGY: </span>
-              <strong className="font-black uppercase text-red-700">{allergyDisplay}</strong>
-            </div>
-          </div>
+          <FileAttachedCardContent patient={patient} />
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { PatientDemographics } from '../types';
 import {
   PrintableBedsideCardSheet,
   IdTagCard,
+  FileAttachedCardContent,
   formatShortDate,
   formatWardBed,
   getDoctorDisplay,
@@ -673,7 +674,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
 
                 <div className="flex justify-center p-2 bg-slate-950/80 rounded-lg border border-slate-700">
                   <div
-                    className="border-[3px] border-[#002878] bg-white text-black p-3 flex flex-col justify-between rounded-xs shadow-xl font-sans"
+                    className="border-[3px] border-[#002878] bg-white text-black p-2.5 flex flex-col justify-between overflow-hidden rounded-xs shadow-xl font-sans"
                     style={{
                       width: '90mm',
                       height: '70mm',
@@ -684,41 +685,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                       boxSizing: 'border-box',
                     }}
                   >
-                    {/* Header Row: Date & Ward/Bed */}
-                    <div className="flex items-center justify-between text-[13px] font-black text-black px-0.5 border-b border-slate-300 pb-0.5">
-                      <span className="font-mono">{formatShortDate(patient.dateOfAdmission)}</span>
-                      <span className="font-bold text-[#002878] uppercase">{formatWardBed(patient)}</span>
-                    </div>
-
-                    {/* Center Inpatient Info */}
-                    <div className="flex flex-col justify-evenly flex-1 py-1 text-center space-y-1">
-                      <h2 className="text-[16.5px] font-black text-black tracking-tight leading-tight uppercase truncate">
-                        {patient.fullName || 'Patient Name'}
-                      </h2>
-
-                      <div className="text-[14px] font-bold text-black tracking-wide leading-none">
-                        <span>CPR </span>
-                        <strong className="font-mono font-black ml-1">{patient.idNumber || '—'}</strong>
-                      </div>
-
-                      <div className="text-[13px] font-bold text-black tracking-wide leading-none">
-                        <span>{patient.age ? `${patient.age} YRS` : '— YRS'}</span>
-                        <span className="mx-1.5 font-black">•</span>
-                        <strong className="font-black">({patient.sex ? (patient.sex.toUpperCase().startsWith('M') ? 'M' : 'F') : '—'})</strong>
-                        <span className="mx-1.5 font-black">•</span>
-                        <strong className="font-black text-slate-800 uppercase">{(patient.nationality || 'BAHRAINI').toUpperCase()}</strong>
-                      </div>
-
-                      <div className="text-[13px] font-bold text-black leading-none truncate">
-                        <span>C/O </span>
-                        <strong className="font-black text-[#002878]">{getDoctorDisplay(patient.caringDoctor).full}</strong>
-                      </div>
-
-                      <div className="text-[13px] font-bold text-black tracking-tight leading-none pt-0.5">
-                        <span>ALLERGY: </span>
-                        <strong className="font-black uppercase text-red-700">{formatAllergy(patient.allergies)}</strong>
-                      </div>
-                    </div>
+                    <FileAttachedCardContent patient={patient} />
                   </div>
                 </div>
 

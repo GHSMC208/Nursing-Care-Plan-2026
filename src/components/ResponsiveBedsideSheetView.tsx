@@ -5,10 +5,10 @@ import {
   IdTagCard,
   BedsidePatientNameContent,
   BedsideDoctorContent,
+  FileAttachedCardContent,
   formatShortDate,
   formatWardBed,
   getDoctorDisplay,
-  formatAllergy,
   formatIdTagAllergy,
 } from './PrintableBedsideCardSheet';
 import { Maximize2, ZoomIn, ZoomOut, RotateCcw, Tag, Layers, FileText, User, Stethoscope, Scissors } from 'lucide-react';
@@ -56,7 +56,6 @@ export const ResponsiveBedsideSheetView: React.FC<ResponsiveBedsideSheetViewProp
   const ageDisplay = patient.age ? `${patient.age} YRS` : '— YRS';
   const sexCode = patient.sex ? (patient.sex.toUpperCase().startsWith('M') ? 'M' : 'F') : '—';
   const nationalityDisplay = (patient.nationality || 'BAHRAINI').toUpperCase();
-  const allergyDisplay = formatAllergy(patient.allergies);
   const idTagAllergyDisplay = formatIdTagAllergy(patient.allergies);
 
   const effectiveScale = scale * userZoom;
@@ -242,7 +241,7 @@ export const ResponsiveBedsideSheetView: React.FC<ResponsiveBedsideSheetViewProp
                 1. File Attached Card #1 (Top-Right on A4 Sheet)
               </span>
               <div
-                className="border-[3px] border-[#002878] bg-white text-black p-3 flex flex-col justify-between rounded-xs shadow-2xl font-sans"
+                className="border-[3px] border-[#002878] bg-white text-black p-2.5 flex flex-col justify-between overflow-hidden rounded-xs shadow-2xl font-sans"
                 style={{
                   width: '90mm',
                   height: '70mm',
@@ -253,41 +252,7 @@ export const ResponsiveBedsideSheetView: React.FC<ResponsiveBedsideSheetViewProp
                   boxSizing: 'border-box',
                 }}
               >
-                {/* Header Row: Date & Ward/Bed */}
-                <div className="flex items-center justify-between text-[13px] font-black text-black px-0.5 border-b border-slate-300 pb-0.5">
-                  <span className="font-mono">{shortDate}</span>
-                  <span className="font-bold text-[#002878] uppercase">{wardBed}</span>
-                </div>
-
-                {/* Center Inpatient Info */}
-                <div className="flex flex-col justify-evenly flex-1 py-1 text-center space-y-1">
-                  <h2 className="text-[16.5px] font-black text-black tracking-tight leading-tight uppercase truncate">
-                    {patientName}
-                  </h2>
-
-                  <div className="text-[14px] font-bold text-black tracking-wide leading-none">
-                    <span>CPR </span>
-                    <strong className="font-mono font-black ml-1">{cprNumber}</strong>
-                  </div>
-
-                  <div className="text-[13px] font-bold text-black tracking-wide leading-none">
-                    <span>{ageDisplay}</span>
-                    <span className="mx-1.5 font-black">•</span>
-                    <strong className="font-black">({sexCode})</strong>
-                    <span className="mx-1.5 font-black">•</span>
-                    <strong className="font-black text-slate-800 uppercase">{nationalityDisplay}</strong>
-                  </div>
-
-                  <div className="text-[13px] font-bold text-black leading-none truncate">
-                    <span>C/O </span>
-                    <strong className="font-black text-[#002878]">{doctor.full}</strong>
-                  </div>
-
-                  <div className="text-[13px] font-bold text-black tracking-tight leading-none pt-0.5">
-                    <span>ALLERGY: </span>
-                    <strong className="font-black uppercase text-red-700">{allergyDisplay}</strong>
-                  </div>
-                </div>
+                <FileAttachedCardContent patient={patient} />
               </div>
             </div>
 
@@ -297,7 +262,7 @@ export const ResponsiveBedsideSheetView: React.FC<ResponsiveBedsideSheetViewProp
                 2. File Attached Card #2 (Bottom-Right on A4 Sheet)
               </span>
               <div
-                className="border-[3px] border-[#002878] bg-white text-black p-3 flex flex-col justify-between rounded-xs shadow-2xl font-sans"
+                className="border-[3px] border-[#002878] bg-white text-black p-2.5 flex flex-col justify-between overflow-hidden rounded-xs shadow-2xl font-sans"
                 style={{
                   width: '90mm',
                   height: '70mm',
@@ -308,41 +273,7 @@ export const ResponsiveBedsideSheetView: React.FC<ResponsiveBedsideSheetViewProp
                   boxSizing: 'border-box',
                 }}
               >
-                {/* Header Row: Date & Ward/Bed */}
-                <div className="flex items-center justify-between text-[13px] font-black text-black px-0.5 border-b border-slate-300 pb-0.5">
-                  <span className="font-mono">{shortDate}</span>
-                  <span className="font-bold text-[#002878] uppercase">{wardBed}</span>
-                </div>
-
-                {/* Center Inpatient Info */}
-                <div className="flex flex-col justify-evenly flex-1 py-1 text-center space-y-1">
-                  <h2 className="text-[16.5px] font-black text-black tracking-tight leading-tight uppercase truncate">
-                    {patientName}
-                  </h2>
-
-                  <div className="text-[14px] font-bold text-black tracking-wide leading-none">
-                    <span>CPR </span>
-                    <strong className="font-mono font-black ml-1">{cprNumber}</strong>
-                  </div>
-
-                  <div className="text-[13px] font-bold text-black tracking-wide leading-none">
-                    <span>{ageDisplay}</span>
-                    <span className="mx-1.5 font-black">•</span>
-                    <strong className="font-black">({sexCode})</strong>
-                    <span className="mx-1.5 font-black">•</span>
-                    <strong className="font-black text-slate-800 uppercase">{nationalityDisplay}</strong>
-                  </div>
-
-                  <div className="text-[13px] font-bold text-black leading-none truncate">
-                    <span>C/O </span>
-                    <strong className="font-black text-[#002878]">{doctor.full}</strong>
-                  </div>
-
-                  <div className="text-[13px] font-bold text-black tracking-tight leading-none pt-0.5">
-                    <span>ALLERGY: </span>
-                    <strong className="font-black uppercase text-red-700">{allergyDisplay}</strong>
-                  </div>
-                </div>
+                <FileAttachedCardContent patient={patient} />
               </div>
             </div>
           </div>
