@@ -33,9 +33,14 @@ export const CarePlanEditor: React.FC<CarePlanEditorProps> = ({
   };
 
   // Find matching NANDA in database to offer quick inline suggestions if available
-  const matchedNanda = NANDA_DATABASE.find(
-    (n) => n.diagnosis.toLowerCase() === plan.diagnosis.toLowerCase()
-  );
+  const normalizedPlanDiagnosis = plan.diagnosis.trim().toLowerCase();
+  const matchedNanda = NANDA_DATABASE.find((n) => {
+    const dbDiag = n.diagnosis.toLowerCase();
+    return (
+      dbDiag === normalizedPlanDiagnosis ||
+      dbDiag === normalizedPlanDiagnosis.replace(/^risk of\s+/, 'risk for ')
+    );
+  });
 
   const appendSuggestion = (field: 'relatedFactors' | 'expectedOutcome' | 'interventions', text: string) => {
     const current = plan[field] || '';

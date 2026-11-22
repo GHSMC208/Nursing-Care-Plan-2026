@@ -136,9 +136,11 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
 
       // Query matching
       const query = searchTerm.toLowerCase().trim();
+      const normalizedQuery = query.replace(/\brisk of\s+/g, 'risk for ');
       const matchesSearch =
         !query ||
         item.diagnosis.toLowerCase().includes(query) ||
+        item.diagnosis.toLowerCase().includes(normalizedQuery) ||
         (item.code && item.code.includes(query)) ||
         item.category.toLowerCase().includes(query) ||
         (item.categories && item.categories.some((c) => c.toLowerCase().includes(query))) ||
