@@ -375,8 +375,8 @@ export const ResponsiveBedsideSheetView: React.FC<ResponsiveBedsideSheetViewProp
                   <span className="text-[10px] font-mono text-slate-400">Tag #1</span>
                 </div>
                 <div className="flex flex-col items-center gap-1.5">
-                  <IdTagCard patient={patient} id="preview-id-tag-2" />
-                  <span className="text-[10px] font-mono text-slate-400">Tag #2</span>
+                  <IdTagCard patient={patient} id="preview-id-tag-2" emptyBedNumber={true} />
+                  <span className="text-[10px] font-mono text-slate-400">Tag #2 (Empty Bed No.)</span>
                 </div>
               </div>
             </div>

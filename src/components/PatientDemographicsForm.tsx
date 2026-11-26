@@ -691,7 +691,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                   <span className="text-[10px] text-slate-400 font-bold uppercase">1:1 Physical Size Output</span>
                   <div className="flex items-center justify-center gap-4 py-1">
                     <IdTagCard patient={patient} id="form-preview-id-tag-1" />
-                    <IdTagCard patient={patient} id="form-preview-id-tag-2" />
+                    <IdTagCard patient={patient} id="form-preview-id-tag-2" emptyBedNumber={true} />
                   </div>
                 </div>
 

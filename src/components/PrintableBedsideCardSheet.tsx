@@ -58,6 +58,25 @@ export function formatWardBed(patient: PatientDemographics): string {
   return 'Ward — bed —';
 }
 
+// Helper to format ward with an empty bed number space for blank-bed ID tag
+export function formatWardWithEmptyBed(patient: PatientDemographics): string {
+  const ward = (patient.wardNumber || '').trim();
+  if (ward) {
+    const cleanWard = ward.replace(/^ward\s*/i, '');
+    return `Ward ${cleanWard} bed\u00A0\u00A0\u00A0\u00A0\u00A0`;
+  }
+
+  if (patient.wardAndBedNumber?.trim()) {
+    const rawWard = patient.wardAndBedNumber.trim().replace(/,?\s*bed\b.*$/i, '').trim();
+    if (rawWard) {
+      const cleanWard = rawWard.replace(/^ward\s*/i, '');
+      return `Ward ${cleanWard} bed\u00A0\u00A0\u00A0\u00A0\u00A0`;
+    }
+  }
+
+  return 'Ward — bed\u00A0\u00A0\u00A0\u00A0\u00A0';
+}
+
 // Helper to extract clean doctor title and name (e.g. "DR." and "Layla")
 export function getDoctorDisplay(doctor?: string): { title: string; name: string; full: string } {
   if (!doctor || !doctor.trim()) {
@@ -125,6 +144,7 @@ export interface IdTagCardProps {
   className?: string;
   zoom?: number;
   showBorder?: boolean;
+  emptyBedNumber?: boolean;
 }
 
 // Dedicated ID Tag component scaled and calibrated exactly to 1.8cm × 6.7cm (18mm × 67mm)
@@ -134,9 +154,10 @@ export const IdTagCard: React.FC<IdTagCardProps> = ({
   className = '',
   zoom = 1,
   showBorder = true,
+  emptyBedNumber = false,
 }) => {
   const shortDate = formatShortDate(patient.dateOfAdmission);
-  const wardBed = formatWardBed(patient);
+  const wardBed = emptyBedNumber ? formatWardWithEmptyBed(patient) : formatWardBed(patient);
   const doctor = getDoctorDisplay(patient.caringDoctor);
   const patientName = patient.fullName || 'Patient Name';
   const cprNumber = patient.idNumber || '—';
@@ -181,7 +202,7 @@ export const IdTagCard: React.FC<IdTagCardProps> = ({
         {/* Row 1: Header - Date of Admission & Ward / Bed Number */}
         <div className="flex items-center justify-between text-[9.5px] font-black tracking-tight text-black border-b border-slate-300 pb-[1px] leading-none">
           <span className="font-mono">{shortDate}</span>
-          <span className="font-bold text-[#002878] uppercase">{wardBed}</span>
+          <span className="font-bold text-[#002878] uppercase whitespace-pre">{wardBed}</span>
         </div>
 
         {/* Row 2: Patient Full Name (Prominent & Clear) */}
@@ -783,11 +804,11 @@ export const PrintableBedsideCardSheet: React.FC<PrintableBedsideCardSheetProps>
             </span>
           )}
 
-          {/* ID Tag #1 (Exactly 1.8cm × 6.7cm = 18mm × 67mm) */}
+          {/* ID Tag #1 (Full Ward & Bed, 1.8cm × 6.7cm = 18mm × 67mm) */}
           <IdTagCard patient={patient} id="id-tag-1" />
 
-          {/* ID Tag #2 (Duplicate, Exactly 1.8cm × 6.7cm = 18mm × 67mm) */}
-          <IdTagCard patient={patient} id="id-tag-2" />
+          {/* ID Tag #2 (Empty Bed Number, 1.8cm × 6.7cm = 18mm × 67mm) */}
+          <IdTagCard patient={patient} id="id-tag-2" emptyBedNumber={true} />
         </div>
 
         {/* 6. BOTTOM-RIGHT: File Attached Card #2 (9cm × 7cm) */}
