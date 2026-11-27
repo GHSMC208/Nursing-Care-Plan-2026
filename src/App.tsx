@@ -325,55 +325,57 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 font-sans flex flex-col">
+    <div className="min-h-screen app-vibrant-canvas text-slate-900 font-sans flex flex-col">
       {/* Toast Notification */}
       {toastMessage && (
         <div
           id="toast-notification"
-          className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-slate-900 text-white rounded-xl shadow-xl text-xs font-semibold flex items-center gap-2 border border-slate-700 animate-in fade-in slide-in-from-bottom-3 duration-200"
+          className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-gradient-to-r from-indigo-900 via-blue-900 to-teal-800 text-white rounded-xl shadow-xl text-xs font-semibold flex items-center gap-2.5 border border-cyan-400/30 animate-in fade-in slide-in-from-bottom-3 duration-200"
         >
-          <CheckCircle className="w-4 h-4 text-blue-400" />
-          {toastMessage}
+          <CheckCircle className="w-4 h-4 text-emerald-300 shrink-0" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Top Application Navigation Bar (Hidden on Print) */}
-      <header className="no-print sticky top-0 z-30 bg-white border-b border-slate-200 shadow-xs">
+      <header className="no-print sticky top-0 z-30 bg-gradient-to-r from-indigo-900 via-blue-800 to-teal-700 text-white shadow-md border-b border-white/15">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand & Title */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <img
               src={governmentHospitalsLogo}
               alt="Government Hospitals Logo"
-              className="w-10 h-10 object-contain shrink-0 rounded-lg bg-white p-0.5 border border-slate-200 shadow-xs"
+              className="w-10 h-10 object-contain shrink-0 rounded-xl bg-white p-1 shadow-sm ring-2 ring-white/25"
               referrerPolicy="no-referrer"
             />
-            <div>
-              <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-tight flex items-center gap-2">
-                Inpatient Care Plan Suite
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 hidden sm:inline">
-                  Government Hospitals • SMC
+            <div className="min-w-0">
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-base sm:text-lg font-extrabold text-white tracking-tight leading-tight whitespace-nowrap truncate">
+                  Inpatient Care Plan Suite
+                </h1>
+                <span className="text-[11px] font-semibold text-cyan-100/90 hidden md:inline whitespace-nowrap">
+                  · Government Hospitals, SMC
                 </span>
-              </h1>
-              <p className="text-xs text-slate-500">
-                Standard NANDA-I taxonomy • Upper-right patient label • A4 Bedside & Door Card printouts
+              </div>
+              <p className="text-xs text-sky-100/80 truncate hidden sm:block">
+                NANDA-I nursing care plans · Upper-right inpatient label · A4 bedside & ID cards
               </p>
             </div>
           </div>
 
           {/* Action Buttons Toolbar */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               id="saved-records-btn"
               type="button"
               onClick={() => setRecordsModalOpen(true)}
-              className="px-3 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-300 transition-all flex items-center gap-1.5 shadow-xs"
+              className="px-3 py-2 rounded-lg bg-white/12 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 backdrop-blur-xs"
               title="View and manage saved inpatient care plans"
             >
-              <FolderOpen className="w-4 h-4 text-blue-600" />
+              <FolderOpen className="w-4 h-4 text-amber-300" />
               <span className="hidden sm:inline">Saved Drafts</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200">
-                {savedRecords.length}
+              <span className="font-mono tabular-nums text-cyan-200 font-bold">
+                ({savedRecords.length})
               </span>
             </button>
 
@@ -381,10 +383,10 @@ export default function App() {
               id="new-care-plan-btn"
               type="button"
               onClick={handleNewRecord}
-              className="px-3 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-300 transition-all flex items-center gap-1.5 shadow-xs"
+              className="px-3 py-2 rounded-lg bg-white/12 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 backdrop-blur-xs"
               title="Create New Blank Care Plan"
             >
-              <Plus className="w-4 h-4 text-slate-500" />
+              <Plus className="w-4 h-4 text-sky-200" />
               <span className="hidden md:inline">New Patient</span>
             </button>
 
@@ -392,10 +394,10 @@ export default function App() {
               id="clear-all-fields-btn"
               type="button"
               onClick={handleClearAllFields}
-              className="px-3 py-2 rounded-lg bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-700 font-semibold text-xs border border-slate-300 hover:border-rose-300 transition-all flex items-center gap-1.5 shadow-xs"
+              className="px-3 py-2 rounded-lg bg-rose-500/20 hover:bg-rose-500/35 text-rose-100 font-semibold text-xs border border-rose-300/35 transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0"
               title="Clear all demographic and care plan fields"
             >
-              <RotateCcw className="w-4 h-4 text-rose-500" />
+              <RotateCcw className="w-4 h-4 text-rose-200" />
               <span className="hidden md:inline">Clear All</span>
             </button>
 
@@ -403,10 +405,10 @@ export default function App() {
               id="save-care-plan-btn"
               type="button"
               onClick={handleSaveCurrentRecord}
-              className="px-3 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-300 transition-all flex items-center gap-1.5 shadow-xs"
+              className="px-3 py-2 rounded-lg bg-white/12 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 backdrop-blur-xs"
               title="Save to local patient records"
             >
-              <Save className="w-4 h-4 text-slate-500" />
+              <Save className="w-4 h-4 text-emerald-300" />
               <span className="hidden md:inline">Save Draft</span>
             </button>
 
@@ -414,7 +416,7 @@ export default function App() {
               id="preview-print-modal-btn"
               type="button"
               onClick={() => handleOpenPrintPreview()}
-              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-emerald-300 hover:to-cyan-300 text-slate-950 font-extrabold text-xs shadow-sm hover:shadow-md transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0"
               title="Open unified A4 Print Preview & Printing for Bedside Sheet and Care Plans"
             >
               <Printer className="w-4 h-4" />
@@ -427,130 +429,144 @@ export default function App() {
       {/* Main Content Area (Hidden on Print) */}
       <main className="no-print flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Active Patient Summary Banner & View Mode Switcher */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-xs border border-blue-200">
-              Pt
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-bold text-sm text-slate-900">
-                  {patient.fullName || 'Unnamed Inpatient'}
-                </span>
-                {patient.idNumber && (
-                  <span className="font-mono text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-semibold">
-                    {patient.idNumber}
-                  </span>
-                )}
-                {patient.wardAndBedNumber && (
-                  <span className="text-xs text-blue-800 font-medium bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                    {patient.wardAndBedNumber}
-                  </span>
-                )}
-                {patient.allergies && (
-                  patient.allergies.toLowerCase().includes('nkda') || patient.allergies.toLowerCase().includes('no known') ? (
-                    <span className="text-xs text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                      NKDA
-                    </span>
-                  ) : patient.allergies.toLowerCase().includes('unknown') ? (
-                    <span className="text-xs text-amber-800 font-semibold bg-amber-50 px-2 py-0.5 rounded border border-amber-200 flex items-center gap-1">
-                      <AlertTriangle className="w-3 h-3 text-amber-600" />
-                      {patient.allergies}
-                    </span>
-                  ) : (
-                    <span
-                      className="text-xs text-rose-800 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200 flex items-center gap-1"
-                      title={patient.allergies}
-                    >
-                      <AlertTriangle className="w-3 h-3 text-rose-600" />
-                      Allergies: {patient.allergies.length > 25 ? `${patient.allergies.slice(0, 25)}...` : patient.allergies}
-                    </span>
-                  )
-                )}
+        <div className="bg-white/95 backdrop-blur-xs rounded-2xl border border-indigo-100/90 shadow-sm overflow-hidden">
+          <div className="h-1.5 w-full bg-gradient-to-r from-sky-500 via-indigo-500 via-teal-500 to-emerald-500" />
+          <div className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-teal-500 text-white flex items-center justify-center font-extrabold text-sm shadow-sm shrink-0">
+                {patient.fullName ? patient.fullName.trim().slice(0, 2).toUpperCase() : 'Pt'}
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Admitted: {patient.dateOfAdmission || 'Not set'} • Caring DR: {patient.caringDoctor || 'Not set'}
-              </p>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-extrabold text-base text-slate-900 tracking-tight">
+                    {patient.fullName || 'Unnamed Inpatient'}
+                  </span>
+                  {patient.idNumber && (
+                    <>
+                      <span className="text-slate-300" aria-hidden="true">·</span>
+                      <span className="font-mono tabular-nums text-xs text-indigo-700 font-bold">
+                        {patient.idNumber}
+                      </span>
+                    </>
+                  )}
+                  {patient.wardAndBedNumber && (
+                    <>
+                      <span className="text-slate-300" aria-hidden="true">·</span>
+                      <span className="text-xs text-teal-700 font-bold">
+                        {patient.wardAndBedNumber}
+                      </span>
+                    </>
+                  )}
+                  {patient.allergies && (
+                    <>
+                      <span className="text-slate-300" aria-hidden="true">·</span>
+                      {patient.allergies.toLowerCase().includes('nkda') || patient.allergies.toLowerCase().includes('no known') ? (
+                        <span className="text-xs text-emerald-700 font-bold inline-flex items-center gap-1">
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          NKDA
+                        </span>
+                      ) : patient.allergies.toLowerCase().includes('unknown') ? (
+                        <span className="text-xs text-amber-700 font-bold inline-flex items-center gap-1">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                          {patient.allergies}
+                        </span>
+                      ) : (
+                        <span
+                          className="text-xs text-rose-700 font-extrabold inline-flex items-center gap-1"
+                          title={patient.allergies}
+                        >
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                          Allergies: {patient.allergies.length > 28 ? `${patient.allergies.slice(0, 28)}...` : patient.allergies}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5 tabular-nums">
+                  Admitted: <span className="font-semibold text-slate-700">{patient.dateOfAdmission || 'Not set'}</span>
+                  <span className="mx-1.5 text-slate-300">·</span>
+                  Caring DR: <span className="font-semibold text-indigo-700">{patient.caringDoctor || 'Not set'}</span>
+                </p>
+              </div>
             </div>
-          </div>
 
-          {/* Navigation View Mode Tabs */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs flex-wrap gap-1">
-            <button
-              id="nav-tab-demographics"
-              type="button"
-              onClick={() => setActiveTab('demographics')}
-              className={`px-3 py-1.5 rounded-md font-semibold transition-all ${
-                activeTab === 'demographics'
-                  ? 'bg-white text-slate-900 shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              1. Inpatient Details & Label
-            </button>
+            {/* Navigation View Mode Tabs */}
+            <div className="flex items-center bg-gradient-to-r from-sky-50 via-indigo-50/80 to-teal-50 p-1.5 rounded-xl border border-indigo-100 text-xs flex-wrap gap-1.5">
+              <button
+                id="nav-tab-demographics"
+                type="button"
+                onClick={() => setActiveTab('demographics')}
+                className={`px-3.5 py-2 rounded-lg font-bold transition-all duration-150 whitespace-nowrap shrink-0 ${
+                  activeTab === 'demographics'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm'
+                    : 'text-slate-700 hover:bg-white/80 hover:text-indigo-700'
+                }`}
+              >
+                1. Inpatient Details & Label
+              </button>
 
-            <button
-              id="nav-tab-bedside-sheet"
-              type="button"
-              onClick={() => setActiveTab('bedside-sheet')}
-              className={`px-3 py-1.5 rounded-md font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === 'bedside-sheet'
-                  ? 'bg-emerald-600 text-white shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-              title="Bedside & Door Label Printout (Exact Attached Layout)"
-            >
-              <Tag className="w-3.5 h-3.5" />
-              <span>2. Bedside & Door Sheet (A4)</span>
-            </button>
+              <button
+                id="nav-tab-bedside-sheet"
+                type="button"
+                onClick={() => setActiveTab('bedside-sheet')}
+                className={`px-3.5 py-2 rounded-lg font-bold transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                  activeTab === 'bedside-sheet'
+                    ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-sm'
+                    : 'text-slate-700 hover:bg-white/80 hover:text-teal-700'
+                }`}
+                title="Bedside & Door Label Printout (Exact Attached Layout)"
+              >
+                <Tag className="w-3.5 h-3.5" />
+                <span>2. Bedside & Door Sheet (A4)</span>
+              </button>
 
-            <button
-              id="nav-tab-plan1"
-              type="button"
-              onClick={() => setActiveTab('plan1')}
-              className={`px-3 py-1.5 rounded-md font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === 'plan1'
-                  ? 'bg-blue-600 text-white shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <span>Care Plan #1</span>
-              {carePlan1.diagnosis && (
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-200"></span>
-              )}
-            </button>
+              <button
+                id="nav-tab-plan1"
+                type="button"
+                onClick={() => setActiveTab('plan1')}
+                className={`px-3.5 py-2 rounded-lg font-bold transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                  activeTab === 'plan1'
+                    ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-sm'
+                    : 'text-slate-700 hover:bg-white/80 hover:text-sky-700'
+                }`}
+              >
+                <span>Care Plan #1</span>
+                {carePlan1.diagnosis && (
+                  <CheckCircle className={`w-3.5 h-3.5 ${activeTab === 'plan1' ? 'text-sky-100' : 'text-sky-600'}`} />
+                )}
+              </button>
 
-            <button
-              id="nav-tab-plan2"
-              type="button"
-              onClick={() => setActiveTab('plan2')}
-              className={`px-3 py-1.5 rounded-md font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === 'plan2'
-                  ? 'bg-slate-900 text-white shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <span>Care Plan #2</span>
-              {carePlan2.diagnosis && (
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-              )}
-            </button>
+              <button
+                id="nav-tab-plan2"
+                type="button"
+                onClick={() => setActiveTab('plan2')}
+                className={`px-3.5 py-2 rounded-lg font-bold transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                  activeTab === 'plan2'
+                    ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-sm'
+                    : 'text-slate-700 hover:bg-white/80 hover:text-violet-700'
+                }`}
+              >
+                <span>Care Plan #2</span>
+                {carePlan2.diagnosis && (
+                  <CheckCircle className={`w-3.5 h-3.5 ${activeTab === 'plan2' ? 'text-violet-100' : 'text-violet-600'}`} />
+                )}
+              </button>
 
-            <button
-              id="nav-tab-split"
-              type="button"
-              onClick={() => setActiveTab('split')}
-              className={`hidden lg:flex items-center gap-1 px-3 py-1.5 rounded-md font-semibold transition-all ${
-                activeTab === 'split'
-                  ? 'bg-slate-800 text-white shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-              title="View both Care Plans side-by-side"
-            >
-              <Columns className="w-3.5 h-3.5" />
-              <span>Dual Split View</span>
-            </button>
+              <button
+                id="nav-tab-split"
+                type="button"
+                onClick={() => setActiveTab('split')}
+                className={`hidden lg:flex items-center gap-1.5 px-3.5 py-2 rounded-lg font-bold transition-all duration-150 whitespace-nowrap shrink-0 ${
+                  activeTab === 'split'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm'
+                    : 'text-slate-700 hover:bg-white/80 hover:text-amber-700'
+                }`}
+                title="View both Care Plans side-by-side"
+              >
+                <Columns className="w-3.5 h-3.5" />
+                <span>Dual Split View</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -567,7 +583,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setActiveTab('plan1')}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-xs transition-all flex items-center gap-2"
+                className="px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 hover:from-blue-700 hover:to-sky-700 text-white font-bold text-xs rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
               >
                 <span>Proceed to Care Plan #1 Editor</span>
                 <span className="font-mono">→</span>
@@ -580,18 +596,17 @@ export default function App() {
         {activeTab === 'bedside-sheet' && (
           <div className="space-y-6">
             {/* Action Bar */}
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+            <div className="bg-gradient-to-r from-teal-700 via-emerald-700 to-cyan-700 text-white p-5 rounded-2xl shadow-sm flex flex-wrap items-center justify-between gap-4">
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-                  <span className="text-sm font-bold text-slate-900">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <span className="text-base font-extrabold text-white tracking-tight">
                     A4 Landscape Bedside, Door & Kardex Identification Sheet
                   </span>
-                  <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold">
-                    Exact Hospital Sizes (9×7 cm & 1.8×6.7 cm)
+                  <span className="text-xs text-emerald-100 font-medium tabular-nums">
+                    · Exact hospital sizes (9×7 cm & 1.8×6.7 cm)
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-teal-100/90 mt-1">
                   Single A4 landscape sheet (27×14 cm grid) containing 4 card types ready to cut: Bedside Cards, Doctor Door Signs, File Attached Kardex Cards, and Vertical Specimen/Wristband ID Tags.
                 </p>
               </div>
@@ -600,43 +615,43 @@ export default function App() {
                 <button
                   type="button"
                   onClick={handleDirectPrintBedside}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-xs hover:shadow transition-all flex items-center gap-1.5"
+                  className="px-4 py-2.5 bg-white hover:bg-emerald-50 text-teal-800 font-extrabold text-xs rounded-xl shadow-sm hover:shadow transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
                 >
-                  <Printer className="w-4 h-4" />
+                  <Printer className="w-4 h-4 text-teal-600" />
                   <span>Print Bedside Sheet</span>
                 </button>
               </div>
             </div>
 
-            {/* Specifications Summary Card */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-              <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
-                <div className="flex items-center justify-between font-bold text-slate-900 mb-1">
+            {/* Specifications Summary Strip */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div className="bg-gradient-to-br from-sky-50 to-white p-4 rounded-xl border border-sky-200/80 shadow-xs">
+                <div className="flex items-center justify-between font-extrabold text-sky-950 mb-1.5">
                   <span>1. Bedside Cards</span>
-                  <span className="text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">9 × 7 cm</span>
+                  <span className="text-sky-700 font-mono tabular-nums font-bold text-xs">9 × 7 cm</span>
                 </div>
-                <p className="text-slate-600 text-[11px]">
-                  <strong>[Name, Caring Dr]</strong>: Top-left patient wall/bedhead card & top-middle / bottom-left doctor door clipboards.
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  <strong className="text-sky-900">Name & Caring Dr:</strong> Top-left patient bedhead card and top-middle / bottom-left doctor door cards.
                 </p>
               </div>
 
-              <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
-                <div className="flex items-center justify-between font-bold text-slate-900 mb-1">
+              <div className="bg-gradient-to-br from-violet-50 to-white p-4 rounded-xl border border-violet-200/80 shadow-xs">
+                <div className="flex items-center justify-between font-extrabold text-violet-950 mb-1.5">
                   <span>2. File Attached Cards</span>
-                  <span className="text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">9 × 7 cm</span>
+                  <span className="text-violet-700 font-mono tabular-nums font-bold text-xs">9 × 7 cm</span>
                 </div>
-                <p className="text-slate-600 text-[11px]">
-                  <strong>[Admission, Ward, Bed, Name, ID, Age, Sex, Caring Dr, Allergy]</strong>: Top-right & bottom-right inpatient file cards.
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  <strong className="text-violet-900">Full 9-Field Kardex:</strong> Top-right & bottom-right inpatient file cards with admission, ward, bed, CPR & allergy.
                 </p>
               </div>
 
-              <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
-                <div className="flex items-center justify-between font-bold text-slate-900 mb-1">
+              <div className="bg-gradient-to-br from-emerald-50 to-white p-4 rounded-xl border border-emerald-200/80 shadow-xs">
+                <div className="flex items-center justify-between font-extrabold text-emerald-950 mb-1.5">
                   <span>3. Vertical ID Tags</span>
-                  <span className="text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">1.8 × 6.7 cm</span>
+                  <span className="text-emerald-700 font-mono tabular-nums font-bold text-xs">1.8 × 6.7 cm</span>
                 </div>
-                <p className="text-slate-600 text-[11px]">
-                  <strong>[Full Inpatient Info + Allergy]</strong>: 2 rotated vertical strips for lab test tubes, blood tubes, and wristbands.
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  <strong className="text-emerald-900">Tube & Wristband Strips:</strong> 2 rotated vertical tags (Tag #1 with bed no., Tag #2 with blank bed space).
                 </p>
               </div>
             </div>
@@ -655,7 +670,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setActiveTab('demographics')}
-                className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white border border-slate-300 rounded-lg shadow-xs"
+                className="px-4 py-2.5 text-xs font-bold text-indigo-700 hover:text-indigo-900 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-xl shadow-xs transition-all whitespace-nowrap"
               >
                 ← Edit Inpatient Demographic Fields
               </button>
@@ -663,7 +678,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setActiveTab('plan1')}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-xs transition-all flex items-center gap-2"
+                className="px-5 py-2.5 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap"
               >
                 <span>Go to Care Plan #1</span>
                 <span className="font-mono">→</span>
@@ -688,7 +703,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setActiveTab('demographics')}
-                className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white border border-slate-300 rounded-lg shadow-xs"
+                className="px-4 py-2.5 text-xs font-bold text-indigo-700 hover:text-indigo-900 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-xl shadow-xs transition-all whitespace-nowrap"
               >
                 ← Edit Inpatient Label Details
               </button>
@@ -696,7 +711,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setActiveTab('plan2')}
-                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-lg shadow-xs transition-all flex items-center gap-2"
+                className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap"
               >
                 <span>Proceed to Care Plan #2</span>
                 <span className="font-mono">→</span>
@@ -721,7 +736,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setActiveTab('plan1')}
-                className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white border border-slate-300 rounded-lg shadow-xs"
+                className="px-4 py-2.5 text-xs font-bold text-sky-700 hover:text-sky-900 bg-white hover:bg-sky-50 border border-sky-200 rounded-xl shadow-xs transition-all whitespace-nowrap"
               >
                 ← Back to Care Plan #1
               </button>
@@ -732,7 +747,7 @@ export default function App() {
                   setPrintDocType('careplans');
                   setPrintPreviewOpen(true);
                 }}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-xs transition-all flex items-center gap-2"
+                className="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap"
               >
                 <Printer className="w-4 h-4" />
                 <span>Open Printable Care Plans</span>

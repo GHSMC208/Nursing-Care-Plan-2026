@@ -313,30 +313,30 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
   return (
     <div
       id="nanda-search-modal-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/75 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-indigo-950/65 backdrop-blur-xs animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
         id="nanda-search-modal-container"
-        className="relative w-full max-w-7xl h-[92vh] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden text-slate-800"
+        className="relative w-full max-w-7xl h-[92vh] bg-white rounded-2xl shadow-2xl border border-indigo-200/80 flex flex-col overflow-hidden text-slate-800"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Header */}
-        <div className="flex items-center justify-between px-6 py-3.5 border-b border-slate-200 bg-slate-50/95 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-indigo-800 via-blue-700 to-teal-600 text-white shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/25 text-cyan-200 flex items-center justify-center shadow-xs">
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+                <h2 className="text-base sm:text-lg font-extrabold text-white leading-tight">
                   NANDA-I Nursing Problem Catalog
                 </h2>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200 hidden sm:inline">
-                  14 Clinical Specialties • Organized Navigation
+                <span className="text-xs font-semibold text-cyan-200 hidden sm:inline">
+                  · 14 Clinical Specialties
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-sky-100/85">
                 Browse standardized inpatient nursing diagnoses by clinical department or NANDA-I functional domain
               </p>
             </div>
@@ -346,7 +346,7 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
             <button
               id="close-nanda-modal-btn"
               onClick={onClose}
-              className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors"
+              className="p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors"
               title="Close window (Esc)"
             >
               <X className="w-5 h-5" />
@@ -355,23 +355,23 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
         </div>
 
         {/* Search Bar & Mode Switcher Bar */}
-        <div className="px-6 py-2.5 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="px-6 py-3 border-b border-indigo-100 bg-gradient-to-r from-sky-50/70 via-white to-teal-50/70 flex flex-wrap items-center justify-between gap-3 shrink-0">
           {/* Search Field */}
           <div className="relative flex-1 min-w-[280px]">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-indigo-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               id="nanda-search-input"
               type="text"
               placeholder="Search diagnoses by name, code (e.g. 00132), etiology, or intervention..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-14 py-2 bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+              className="w-full pl-10 pr-16 py-2.5 bg-white border border-indigo-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition-all font-medium"
               autoFocus
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-200/70"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-indigo-700 hover:text-indigo-900 text-[11px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100"
               >
                 Clear
               </button>
@@ -379,17 +379,17 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
           </div>
 
           {/* View Mode Switcher */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold">
+          <div className="flex items-center bg-indigo-50/90 p-1 rounded-xl border border-indigo-100 text-xs font-bold">
             <button
               type="button"
               onClick={() => {
                 setBrowseMode('specialty');
                 setSelectedDomain('All Domains');
               }}
-              className={`px-3 py-1.5 rounded-md transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 browseMode === 'specialty'
-                  ? 'bg-white text-blue-700 shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-indigo-800'
               }`}
             >
               <Grid className="w-3.5 h-3.5" />
@@ -401,10 +401,10 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                 setBrowseMode('domain');
                 setSelectedCategory('All Categories');
               }}
-              className={`px-3 py-1.5 rounded-md transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 browseMode === 'domain'
-                  ? 'bg-white text-blue-700 shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-teal-800'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -414,11 +414,11 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
         </div>
 
         {/* 3-Column Structured Layout */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden bg-slate-100/60">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden bg-sky-50/40">
           {/* COLUMN 1: Organized Category Sidebar (3 cols on desktop) */}
-          <div className="md:col-span-3 border-r border-slate-200 bg-white overflow-y-auto flex flex-col divide-y divide-slate-100">
+          <div className="md:col-span-3 border-r border-indigo-100 bg-white overflow-y-auto flex flex-col divide-y divide-indigo-50">
             {/* All Overview Option */}
-            <div className="p-3 bg-slate-50/50">
+            <div className="p-3 bg-gradient-to-r from-sky-50/60 to-indigo-50/60">
               <button
                 type="button"
                 id="cat-all-btn"
@@ -426,10 +426,10 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                   setSelectedCategory('All Categories');
                   setSelectedDomain('All Domains');
                 }}
-                className={`w-full px-3 py-2 rounded-lg font-bold text-xs flex items-center justify-between transition-all border ${
+                className={`w-full px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-all border ${
                   selectedCategory === 'All Categories' && selectedDomain === 'All Domains'
-                    ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                    : 'bg-white text-slate-800 border-slate-200 hover:bg-slate-50'
+                    ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-600 text-white border-transparent shadow-sm'
+                    : 'bg-white text-slate-800 border-indigo-100 hover:bg-indigo-50/50'
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -437,10 +437,10 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                   <span>All Inpatient Diagnoses</span>
                 </div>
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold ${
+                  className={`text-[11px] font-mono tabular-nums font-bold ${
                     selectedCategory === 'All Categories' && selectedDomain === 'All Domains'
-                      ? 'bg-white/20 text-white'
-                      : 'bg-slate-100 text-slate-600'
+                      ? 'text-cyan-100'
+                      : 'text-indigo-600'
                   }`}
                 >
                   {NANDA_DATABASE.length}
@@ -454,8 +454,8 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                 {SPECIALTY_GROUPS.map((group) => (
                   <div key={group.name} className="space-y-1.5">
                     {/* Group Header */}
-                    <div className="flex items-center justify-between px-1">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                    <div className="flex items-center justify-between px-1.5">
+                      <span className="text-[11px] font-extrabold text-indigo-900/60">
                         {group.name}
                       </span>
                     </div>
@@ -474,10 +474,10 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                               setSelectedCategory(cat);
                               setSelectedDomain('All Domains');
                             }}
-                            className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-between group border ${
+                            className={`w-full text-left px-2.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between group border ${
                               isSelected
-                                ? 'bg-blue-50 text-blue-900 border-blue-400 ring-1 ring-blue-400 font-bold shadow-xs'
-                                : 'bg-white text-slate-700 border-transparent hover:border-slate-200 hover:bg-slate-50'
+                                ? 'bg-gradient-to-r from-sky-50 to-indigo-50 text-indigo-950 border-indigo-300 ring-1 ring-indigo-300/60 font-bold shadow-xs'
+                                : 'bg-white text-slate-700 border-transparent hover:border-sky-200 hover:bg-sky-50/50'
                             }`}
                           >
                             <div className="flex items-center gap-2 truncate">
@@ -485,10 +485,10 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                               <span className="truncate">{cat}</span>
                             </div>
                             <span
-                              className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md shrink-0 font-bold ${
+                              className={`text-[11px] font-mono tabular-nums shrink-0 font-bold ${
                                 isSelected
-                                  ? 'bg-blue-600 text-white'
-                                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
+                                  ? 'text-indigo-700'
+                                  : 'text-slate-400 group-hover:text-indigo-600'
                               }`}
                             >
                               {count}
@@ -503,8 +503,8 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
             ) : (
               /* Structured Domain Explorer */
               <div className="p-3 space-y-2">
-                <div className="px-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                <div className="px-1.5">
+                  <span className="text-[11px] font-extrabold text-teal-900/60">
                     NANDA-I Domains
                   </span>
                 </div>
@@ -521,21 +521,21 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                           setSelectedDomain(domain);
                           setSelectedCategory('All Categories');
                         }}
-                        className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-between group border ${
+                        className={`w-full text-left px-2.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between group border ${
                           isSelected
-                            ? 'bg-blue-50 text-blue-900 border-blue-400 ring-1 ring-blue-400 font-bold shadow-xs'
-                            : 'bg-white text-slate-700 border-transparent hover:border-slate-200 hover:bg-slate-50'
+                            ? 'bg-gradient-to-r from-teal-50 to-emerald-50 text-teal-950 border-teal-300 ring-1 ring-teal-300/60 font-bold shadow-xs'
+                            : 'bg-white text-slate-700 border-transparent hover:border-teal-200 hover:bg-teal-50/40'
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">
-                          <Layers className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          <Layers className="w-3.5 h-3.5 text-teal-600 shrink-0" />
                           <span className="truncate">{domain}</span>
                         </div>
                         <span
-                          className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md shrink-0 font-bold ${
+                          className={`text-[11px] font-mono tabular-nums shrink-0 font-bold ${
                             isSelected
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
+                              ? 'text-teal-700'
+                              : 'text-slate-400 group-hover:text-teal-600'
                           }`}
                         >
                           {count}
@@ -549,27 +549,28 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
           </div>
 
           {/* COLUMN 2: Filtered Diagnoses List (4 cols on desktop) */}
-          <div className="md:col-span-4 border-r border-slate-200 bg-slate-50/70 overflow-y-auto flex flex-col p-3 space-y-2">
+          <div className="md:col-span-4 border-r border-indigo-100 bg-gradient-to-b from-sky-50/50 to-indigo-50/30 overflow-y-auto flex flex-col p-3 space-y-2.5">
             {/* List Header Filter Status */}
-            <div className="flex items-center justify-between px-2 py-1 text-xs font-semibold text-slate-500 border-b border-slate-200 pb-1.5 shrink-0">
+            <div className="flex items-center justify-between px-2 py-1 text-xs font-semibold text-slate-500 border-b border-indigo-100 pb-2 shrink-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-slate-800">
+                <span className="font-extrabold text-indigo-950">
                   {browseMode === 'specialty' ? selectedCategory : selectedDomain}
                 </span>
-                <span className="px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">
+                <span className="text-slate-300">·</span>
+                <span className="text-indigo-700 font-bold tabular-nums">
                   {filteredList.length} items
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400">Click to customize</span>
+              <span className="text-[11px] text-slate-400">Click to customize</span>
             </div>
 
             {/* List Items */}
             {filteredList.length === 0 ? (
               <div className="text-center py-12 px-4">
-                <HelpCircle className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-slate-700">No diagnoses found</p>
+                <HelpCircle className="w-10 h-10 text-indigo-300 mx-auto mb-2" />
+                <p className="text-sm font-bold text-slate-700">No diagnoses found</p>
                 <p className="text-xs text-slate-500 mt-1">
-                  Try clearing your search query or selecting "All Diagnoses".
+                  Try clearing your search query or selecting "All Inpatient Diagnoses".
                 </p>
                 <button
                   type="button"
@@ -578,7 +579,7 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                     setSelectedCategory('All Categories');
                     setSelectedDomain('All Domains');
                   }}
-                  className="mt-3 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-semibold rounded-lg border border-blue-200"
+                  className="mt-3 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-xl shadow-xs"
                 >
                   Reset Search & Filters
                 </button>
@@ -593,53 +594,50 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                       id={`nanda-item-${item.code || item.diagnosis.replace(/\s+/g, '-').toLowerCase()}`}
                       type="button"
                       onClick={() => handleSelectActiveItem(item)}
-                      className={`w-full text-left p-3 rounded-xl border transition-all flex flex-col gap-1.5 cursor-pointer ${
+                      className={`w-full text-left p-3.5 rounded-xl border transition-all flex flex-col gap-1.5 cursor-pointer ${
                         isActive
-                          ? 'bg-white border-blue-500 ring-2 ring-blue-500/30 shadow-md'
-                          : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs'
+                          ? 'bg-gradient-to-br from-white via-sky-50/70 to-indigo-50/70 border-indigo-400 ring-2 ring-indigo-500/25 shadow-sm'
+                          : 'bg-white border-slate-200/90 hover:border-sky-300 hover:shadow-xs'
                       }`}
                     >
                       {/* Top: Diagnosis & NANDA Code */}
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-start gap-2">
                           <span className="mt-0.5 shrink-0">{getCategoryIcon(item.category)}</span>
-                          <span className="font-bold text-xs sm:text-sm text-slate-900 leading-snug">
+                          <span className="font-extrabold text-xs sm:text-sm text-slate-900 leading-snug">
                             {item.diagnosis}
                           </span>
                         </div>
                         {item.code && (
-                          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 shrink-0">
+                          <span className="text-[11px] font-mono tabular-nums font-bold text-indigo-600 shrink-0">
                             #{item.code}
                           </span>
                         )}
                       </div>
 
-                      {/* Category & Domain Badges */}
-                      <div className="flex flex-wrap items-center gap-1 text-[10px]">
-                        <span className={`px-2 py-0.5 rounded font-bold border ${getCategoryBadgeClass(item.category)}`}>
-                          {item.category}
-                        </span>
-                        <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium border border-slate-200 truncate max-w-[140px]">
-                          {item.domain}
-                        </span>
+                      {/* Category & Domain Metadata */}
+                      <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 font-semibold">
+                        <span className="text-indigo-700 font-bold">{item.category}</span>
+                        <span className="text-slate-300">·</span>
+                        <span className="truncate max-w-[170px]">{item.domain}</span>
                       </div>
 
                       {/* Snippet */}
-                      <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed font-sans">
+                      <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed font-sans">
                         {item.definition}
                       </p>
 
                       {/* Components Preview Counters */}
-                      <div className="flex items-center gap-2 pt-1 border-t border-slate-100 text-[10px] text-slate-400 font-semibold">
-                        <span className="text-amber-700 font-medium">
+                      <div className="flex items-center gap-2 pt-1.5 border-t border-slate-100 text-[10.5px] font-semibold tabular-nums">
+                        <span className="text-amber-700">
                           {item.suggestedRelatedFactors.length} etiologies
                         </span>
-                        <span>•</span>
-                        <span className="text-emerald-700 font-medium">
+                        <span className="text-slate-300">·</span>
+                        <span className="text-emerald-700">
                           {item.suggestedExpectedOutcomes.length} goals
                         </span>
-                        <span>•</span>
-                        <span className="text-blue-700 font-medium">
+                        <span className="text-slate-300">·</span>
+                        <span className="text-blue-700">
                           {item.suggestedInterventions.length} actions
                         </span>
                       </div>
@@ -655,43 +653,39 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
             {activeItem ? (
               <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
                 {/* Active Diagnosis Overview Banner */}
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5 ${getCategoryBadgeClass(activeItem.category)}`}>
+                <div className="bg-gradient-to-br from-sky-50 via-indigo-50/70 to-teal-50/70 p-4 rounded-2xl border border-indigo-200/80 space-y-2.5">
+                  <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+                    <div className="flex items-center gap-2 font-bold">
+                      <span className="inline-flex items-center gap-1.5 text-indigo-800">
                         {getCategoryIcon(activeItem.category)}
                         {activeItem.category}
                       </span>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                        {activeItem.domain}
-                      </span>
+                      <span className="text-indigo-300">·</span>
+                      <span className="text-teal-700">{activeItem.domain}</span>
                     </div>
                     {activeItem.code && (
-                      <span className="text-xs font-mono text-slate-600 font-bold bg-white px-2 py-0.5 rounded border border-slate-200">
+                      <span className="text-xs font-mono tabular-nums text-indigo-700 font-extrabold">
                         NANDA #{activeItem.code}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-black text-slate-900 leading-snug">
+                  <h3 className="text-base sm:text-lg font-extrabold text-slate-900 leading-snug">
                     {activeItem.diagnosis}
                   </h3>
 
-                  <div className="text-xs text-slate-700 leading-relaxed bg-white p-2.5 rounded-lg border border-slate-200">
-                    <span className="font-bold text-slate-900 block mb-0.5">Clinical Definition:</span>
+                  <div className="text-xs text-slate-700 leading-relaxed bg-white/90 p-3 rounded-xl border border-indigo-100">
+                    <span className="font-bold text-indigo-950 block mb-0.5">Clinical Definition</span>
                     {activeItem.definition}
                   </div>
                 </div>
 
                 {/* Section 1: Related Factors (Etiology) */}
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2.5">
+                <div className="bg-gradient-to-br from-amber-50/50 to-white p-4 rounded-2xl border border-amber-200/80 space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                        1. Related Factors (Etiology)
-                      </h4>
-                    </div>
+                    <h4 className="text-xs font-extrabold text-amber-950">
+                      1. Related Factors (Etiology)
+                    </h4>
                     <button
                       type="button"
                       onClick={selectAllFactors}
@@ -702,7 +696,7 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                         : 'Select All'}
                     </button>
                   </div>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-amber-900/75">
                     Select contributing pathophysiology, surgical factors, or causes:
                   </p>
                   <div className="space-y-1.5">
@@ -711,17 +705,17 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                       return (
                         <label
                           key={idx}
-                          className={`flex items-start gap-2.5 p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
+                          className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
                             isChecked
-                              ? 'bg-amber-50/80 border-amber-300 text-amber-950 font-semibold'
-                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                              ? 'bg-amber-100/70 border-amber-300 text-amber-950 font-semibold'
+                              : 'bg-white border-amber-100 text-slate-700 hover:bg-amber-50/40'
                           }`}
                         >
                           <input
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => toggleFactor(factor)}
-                            className="mt-0.5 rounded border-slate-300 text-amber-600 focus:ring-amber-500 shrink-0"
+                            className="mt-0.5 rounded border-amber-300 text-amber-600 focus:ring-amber-500 shrink-0"
                           />
                           <span className="leading-snug">{factor}</span>
                         </label>
@@ -731,14 +725,11 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                 </div>
 
                 {/* Section 2: Expected Outcomes (NOC) */}
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2.5">
+                <div className="bg-gradient-to-br from-emerald-50/50 to-white p-4 rounded-2xl border border-emerald-200/80 space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                        2. Expected Outcomes (NOC Goals)
-                      </h4>
-                    </div>
+                    <h4 className="text-xs font-extrabold text-emerald-950">
+                      2. Expected Outcomes (NOC Goals)
+                    </h4>
                     <button
                       type="button"
                       onClick={selectAllOutcomes}
@@ -749,7 +740,7 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                         : 'Select All'}
                     </button>
                   </div>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-emerald-900/75">
                     Select measurable SMART patient goals and timelines:
                   </p>
                   <div className="space-y-1.5">
@@ -758,17 +749,17 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                       return (
                         <label
                           key={idx}
-                          className={`flex items-start gap-2.5 p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
+                          className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
                             isChecked
-                              ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950 font-semibold'
-                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                              ? 'bg-emerald-100/70 border-emerald-300 text-emerald-950 font-semibold'
+                              : 'bg-white border-emerald-100 text-slate-700 hover:bg-emerald-50/40'
                           }`}
                         >
                           <input
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => toggleOutcome(outcome)}
-                            className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
+                            className="mt-0.5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
                           />
                           <span className="leading-snug">{outcome}</span>
                         </label>
@@ -778,14 +769,11 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                 </div>
 
                 {/* Section 3: Nursing Interventions (NIC) */}
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2.5">
+                <div className="bg-gradient-to-br from-sky-50/55 to-white p-4 rounded-2xl border border-sky-200/80 space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                        3. Nursing Interventions & Actions (NIC)
-                      </h4>
-                    </div>
+                    <h4 className="text-xs font-extrabold text-sky-950">
+                      3. Nursing Interventions & Actions (NIC)
+                    </h4>
                     <button
                       type="button"
                       onClick={selectAllInterventions}
@@ -796,7 +784,7 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                         : 'Select All'}
                     </button>
                   </div>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-sky-900/75">
                     Select independent, collaborative, and assessment nursing actions:
                   </p>
                   <div className="space-y-1.5">
@@ -805,17 +793,17 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                       return (
                         <label
                           key={idx}
-                          className={`flex items-start gap-2.5 p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
+                          className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
                             isChecked
-                              ? 'bg-blue-50/80 border-blue-300 text-blue-950 font-semibold'
-                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                              ? 'bg-sky-100/70 border-sky-300 text-blue-950 font-semibold'
+                              : 'bg-white border-sky-100 text-slate-700 hover:bg-sky-50/40'
                           }`}
                         >
                           <input
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => toggleIntervention(intervention)}
-                            className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 shrink-0"
+                            className="mt-0.5 rounded border-sky-300 text-blue-600 focus:ring-blue-500 shrink-0"
                           />
                           <span className="leading-snug">{intervention}</span>
                         </label>
@@ -826,20 +814,20 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400">
-                <BookOpen className="w-12 h-12 text-slate-300 mb-2" />
-                <p className="text-sm font-semibold text-slate-700">Select a diagnosis</p>
-                <p className="text-xs text-slate-400 mt-1">
+                <BookOpen className="w-12 h-12 text-indigo-200 mb-2" />
+                <p className="text-sm font-bold text-slate-700">Select a diagnosis</p>
+                <p className="text-xs text-slate-500 mt-1">
                   Choose a problem from the middle list to configure etiologies, outcomes, and interventions.
                 </p>
               </div>
             )}
 
             {/* Bottom Action Bar */}
-            <div className="p-4 border-t border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0 shadow-sm">
+            <div className="p-4 border-t border-indigo-100 bg-gradient-to-r from-sky-50/40 to-teal-50/40 flex items-center justify-between gap-3 shrink-0">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
+                className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-indigo-900 hover:bg-indigo-50 rounded-xl transition-all"
               >
                 Cancel
               </button>
@@ -849,7 +837,7 @@ export const NandaSearchModal: React.FC<NandaSearchModalProps> = ({
                 type="button"
                 onClick={handleApply}
                 disabled={!activeItem}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 text-white text-xs font-bold rounded-lg shadow-xs hover:shadow transition-all flex items-center gap-2"
+                className="px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 disabled:opacity-50 text-white text-xs font-extrabold rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
               >
                 <Check className="w-4 h-4" />
                 <span>Apply to Care Plan</span>

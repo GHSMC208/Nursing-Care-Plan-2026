@@ -140,31 +140,30 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
   const bedDisplay = patient.bedNumber || (patient.wardAndBedNumber ? patient.wardAndBedNumber.split(',')[1]?.replace(/^Bed\s*/i, '').trim() : '');
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+    <div className="bg-white/95 backdrop-blur-xs rounded-2xl border border-indigo-100/90 shadow-sm overflow-hidden">
       {/* Card Header */}
-      <div className="px-6 py-4 bg-slate-50/70 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+      <div className="px-6 py-4 bg-gradient-to-r from-sky-50 via-indigo-50/80 to-teal-50/80 border-b border-indigo-100 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold border border-blue-200">
-            <User className="w-4 h-4" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-sm">
+            <User className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
               Inpatient Demographics & Upper-Right Label Data
             </h2>
-            <p className="text-xs text-slate-500">
-              Required for the hospital identification label printed on the top-right of both care plans
+            <p className="text-xs text-slate-600">
+              Required for the hospital identification label printed on the top-right of both care plans and bedside cards
             </p>
           </div>
         </div>
 
         {/* Header Action Tools */}
         <div className="flex items-center gap-2 text-xs">
-          {/* Clear Fields Button */}
           <button
             id="clear-demographics-fields-btn"
             type="button"
             onClick={onReset}
-            className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold border border-rose-200 transition-all text-xs flex items-center gap-1.5 shadow-2xs"
+            className="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold border border-rose-200 transition-all text-xs flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
             title="Clear all demographic inputs"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -179,7 +178,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
         <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* 1. Patient Full Name */}
           <div className="lg:col-span-2">
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+            <label className="block text-xs font-bold text-indigo-950 mb-1.5 flex items-center gap-1.5">
               <User className="w-3.5 h-3.5 text-blue-600" /> Patient Full Name *
             </label>
             <input
@@ -188,14 +187,14 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               placeholder="e.g., Eleanor Vance"
               value={patient.fullName}
               onChange={(e) => handleFieldChange('fullName', e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all placeholder:text-slate-400"
+              className="w-full px-3.5 py-2.5 bg-sky-50/30 hover:bg-white focus:bg-white border border-sky-200/90 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500 transition-all placeholder:text-slate-400"
             />
           </div>
 
           {/* 2. Patient ID / MRN */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <Hash className="w-3.5 h-3.5 text-blue-600" /> ID Number (MRN) *
+            <label className="block text-xs font-bold text-indigo-950 mb-1.5 flex items-center gap-1.5">
+              <Hash className="w-3.5 h-3.5 text-indigo-600" /> ID Number (MRN) *
             </label>
             <input
               id="patient-id-input"
@@ -203,13 +202,13 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               placeholder="e.g., MRN-8492015"
               value={patient.idNumber}
               onChange={(e) => handleFieldChange('idNumber', e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-mono placeholder:text-slate-400"
+              className="w-full px-3.5 py-2.5 bg-indigo-50/30 hover:bg-white focus:bg-white border border-indigo-200/90 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition-all font-mono tabular-nums placeholder:text-slate-400"
             />
           </div>
 
           {/* 3. Age */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-800 mb-1.5">
               Age *
             </label>
             <input
@@ -220,20 +219,20 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               placeholder="e.g., 58"
               value={patient.age}
               onChange={(e) => handleFieldChange('age', e.target.value ? parseInt(e.target.value, 10) : '')}
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all placeholder:text-slate-400"
+              className="w-full px-3.5 py-2.5 bg-white border border-slate-200 hover:border-sky-300 rounded-xl text-sm font-semibold text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all placeholder:text-slate-400"
             />
           </div>
 
           {/* 4. Sex */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-800 mb-1.5">
               Sex *
             </label>
             <select
               id="patient-sex-select"
               value={patient.sex || ''}
               onChange={(e) => handleFieldChange('sex', e.target.value as any)}
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+              className="w-full px-3.5 py-2.5 bg-white border border-slate-200 hover:border-sky-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all"
             >
               <option value="" disabled>-- Select Sex --</option>
               <option value="Female">Female</option>
@@ -244,16 +243,16 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
           {/* 5. Nationality */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1">
-                <Flag className="w-3.5 h-3.5 text-blue-600" /> Nationality *
+              <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Flag className="w-3.5 h-3.5 text-violet-600" /> Nationality *
               </label>
               <button
                 type="button"
                 onClick={() => setIsManualNationality(!isManualNationality)}
-                className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 underline"
+                className="text-[11px] font-bold text-violet-600 hover:text-violet-800 flex items-center gap-1 underline"
               >
                 <Edit3 className="w-3 h-3" />
-                {isManualNationality ? 'Choose from list' : 'Type other manually'}
+                {isManualNationality ? 'Choose from list' : 'Type manually'}
               </button>
             </div>
 
@@ -269,7 +268,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                     handleFieldChange('nationality', val);
                   }
                 }}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                className="w-full px-3.5 py-2.5 bg-white border border-violet-200/80 hover:border-violet-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-500 transition-all"
               >
                 <option value="" disabled>-- Select Nationality --</option>
                 <option value="Bahraini">Bahraini</option>
@@ -288,13 +287,13 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                     placeholder="Type nationality manually..."
                     value={patient.nationality}
                     onChange={(e) => handleFieldChange('nationality', e.target.value)}
-                    className="w-full pl-3.5 pr-20 py-2.5 bg-white border border-blue-500 ring-1 ring-blue-500/20 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all placeholder:text-slate-400"
+                    className="w-full pl-3.5 pr-20 py-2.5 bg-white border border-violet-500 ring-1 ring-violet-500/20 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-600 transition-all placeholder:text-slate-400"
                     autoFocus
                   />
                   <button
                     type="button"
                     onClick={() => setIsManualNationality(false)}
-                    className="absolute right-2 px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md border border-slate-300 transition-all"
+                    className="absolute right-2 px-2.5 py-1 text-xs font-bold bg-violet-50 hover:bg-violet-100 text-violet-700 rounded-lg border border-violet-200 transition-all"
                   >
                     List View
                   </button>
@@ -302,8 +301,8 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               </div>
             )}
 
-            {/* Quick-Pick Preset Pills */}
-            <div className="mt-1.5 flex flex-wrap gap-1 items-center">
+            {/* Quick-Pick Nationality Buttons */}
+            <div className="mt-2 flex flex-wrap gap-1.5 items-center">
               {PRESET_NATIONALITIES.map((nat) => (
                 <button
                   key={nat}
@@ -312,10 +311,10 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                     handleFieldChange('nationality', nat);
                     setIsManualNationality(false);
                   }}
-                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-all ${
+                  className={`text-[11px] font-bold px-2 py-0.5 rounded-lg border transition-all ${
                     patient.nationality === nat
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
+                      ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-violet-600 shadow-xs'
+                      : 'bg-violet-50/50 text-violet-900 border-violet-200/80 hover:bg-violet-100/70'
                   }`}
                 >
                   {nat}
@@ -327,13 +326,13 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
           {/* 6. Date of Admission */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-blue-600" /> Date of Admission *
+              <label className="text-xs font-bold text-teal-950 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-teal-600" /> Date of Admission *
               </label>
               <button
                 type="button"
                 onClick={setTodayAdmission}
-                className="text-[11px] text-blue-600 hover:text-blue-800 font-semibold underline"
+                className="text-[11px] text-teal-700 hover:text-teal-900 font-bold underline"
               >
                 Set Today
               </button>
@@ -343,14 +342,14 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               type="date"
               value={patient.dateOfAdmission}
               onChange={(e) => handleFieldChange('dateOfAdmission', e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+              className="w-full px-3.5 py-2.5 bg-teal-50/25 hover:bg-white focus:bg-white border border-teal-200/90 rounded-xl text-sm font-semibold text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-teal-500/25 focus:border-teal-500 transition-all"
             />
           </div>
 
           {/* 7. Ward Number (Separated) */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <DoorOpen className="w-3.5 h-3.5 text-blue-600" /> Ward Number *
+            <label className="block text-xs font-bold text-teal-950 mb-1.5 flex items-center gap-1.5">
+              <DoorOpen className="w-3.5 h-3.5 text-teal-600" /> Ward Number *
             </label>
             <input
               id="patient-ward-number-input"
@@ -358,14 +357,14 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               placeholder="e.g., Ward 4B / 4B"
               value={patient.wardNumber || ''}
               onChange={(e) => handleFieldChange('wardNumber', e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all placeholder:text-slate-400"
+              className="w-full px-3.5 py-2.5 bg-teal-50/25 hover:bg-white focus:bg-white border border-teal-200/90 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/25 focus:border-teal-500 transition-all placeholder:text-slate-400"
             />
           </div>
 
           {/* 8. Bed Number (Separated) */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <Bed className="w-3.5 h-3.5 text-blue-600" /> Bed Number *
+            <label className="block text-xs font-bold text-teal-950 mb-1.5 flex items-center gap-1.5">
+              <Bed className="w-3.5 h-3.5 text-emerald-600" /> Bed Number *
             </label>
             <input
               id="patient-bed-number-input"
@@ -373,14 +372,14 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               placeholder="e.g., 12 / Bed 12"
               value={patient.bedNumber || ''}
               onChange={(e) => handleFieldChange('bedNumber', e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all placeholder:text-slate-400"
+              className="w-full px-3.5 py-2.5 bg-emerald-50/25 hover:bg-white focus:bg-white border border-emerald-200/90 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-all placeholder:text-slate-400"
             />
           </div>
 
           {/* 9. Caring Doctor (DR) */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <Stethoscope className="w-3.5 h-3.5 text-blue-600" /> Caring Doctor (DR) *
+            <label className="block text-xs font-bold text-sky-950 mb-1.5 flex items-center gap-1.5">
+              <Stethoscope className="w-3.5 h-3.5 text-sky-600" /> Caring Doctor (DR) *
             </label>
             <input
               id="patient-caring-dr-input"
@@ -388,14 +387,14 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               placeholder="e.g., Dr. Michael Chen, MD"
               value={patient.caringDoctor}
               onChange={(e) => handleFieldChange('caringDoctor', e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all placeholder:text-slate-400"
+              className="w-full px-3.5 py-2.5 bg-sky-50/25 hover:bg-white focus:bg-white border border-sky-200/90 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all placeholder:text-slate-400"
             />
           </div>
 
           {/* Hospital / Health Facility Name */}
           <div className="md:col-span-2 lg:col-span-3">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <Building2 className="w-3.5 h-3.5 text-slate-400" /> Hospital / Health Facility Name
+            <label className="block text-xs font-bold text-slate-600 mb-1.5 flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-indigo-500" /> Hospital / Health Facility Name
             </label>
             <input
               id="patient-hospital-name-input"
@@ -403,46 +402,46 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               placeholder="e.g., Salmaniya Medical Complex"
               value={patient.hospitalName || ''}
               onChange={(e) => handleFieldChange('hospitalName', e.target.value)}
-              className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+              className="w-full px-3.5 py-2.5 bg-slate-50/80 hover:bg-white focus:bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
             />
           </div>
 
           {/* 10. Patient Allergies / Adverse Drug Reactions Entry (Digital Kardex Record) */}
-          <div className="md:col-span-2 lg:col-span-3 pt-2">
-            <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/40 space-y-3">
+          <div className="md:col-span-2 lg:col-span-3 pt-1">
+            <div className="p-4 sm:p-5 rounded-2xl border border-amber-200/90 bg-gradient-to-br from-amber-50/75 via-orange-50/40 to-rose-50/50 space-y-3.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold border border-amber-300">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 text-white flex items-center justify-center shadow-xs shrink-0">
                     <AlertTriangle className="w-4 h-4" />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <label className="text-xs font-extrabold text-slate-900 block">
                       Patient Allergies & Adverse Drug Reactions (ADR)
                     </label>
-                    <span className="text-[11px] text-slate-500">
-                      Logged in clinical intake • <strong className="text-amber-800 font-semibold">Excluded from care plan print</strong>
+                    <span className="text-[11px] text-slate-600">
+                      Logged in clinical intake & bedside cards · <strong className="text-amber-900 font-semibold">Excluded from care plan print</strong>
                     </span>
                   </div>
                 </div>
 
-                {/* Status Indicator Badge */}
+                {/* Status Indicator */}
                 {isNkda ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300">
-                    <ShieldCheck className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-emerald-700">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
                     NKDA Confirmed
                   </span>
                 ) : isUnknownAllergy ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
+                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-800">
+                    <AlertTriangle className="w-4 h-4 text-amber-600" />
                     Unknown Drug Allergy
                   </span>
                 ) : hasSpecificAllergies ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold border border-rose-300 animate-pulse">
-                    <ShieldAlert className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-rose-700">
+                    <ShieldAlert className="w-4 h-4 text-rose-600" />
                     Allergies Recorded
                   </span>
                 ) : (
-                  <span className="text-[11px] text-slate-400 font-medium">
+                  <span className="text-xs text-slate-500 font-medium">
                     No allergy entry yet
                   </span>
                 )}
@@ -456,7 +455,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                   placeholder="e.g., Unknown Drug Allergy, NKDA, or Penicillin (Anaphylaxis), Morphine"
                   value={patient.allergies || ''}
                   onChange={(e) => handleFieldChange('allergies', e.target.value)}
-                  className={`w-full px-3.5 py-2.5 bg-white border rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 transition-all placeholder:text-slate-400 ${
+                  className={`w-full px-3.5 py-2.5 bg-white border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 transition-all placeholder:text-slate-400 ${
                     hasSpecificAllergies
                       ? 'border-rose-300 text-rose-900 focus:ring-rose-500/20 focus:border-rose-500'
                       : isNkda
@@ -468,11 +467,11 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                 />
               </div>
 
-              {/* Common Allergy Quick-Select Pills */}
+              {/* Common Allergy Quick-Select Buttons */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                    Quick Clinical Presets & Common Allergens:
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold text-slate-700">
+                    Quick Clinical Presets & Common Allergens
                   </span>
                   <div className="flex items-center gap-3">
                     <button
@@ -505,18 +504,18 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                         key={allergen}
                         type="button"
                         onClick={() => handleAllergyPresetClick(allergen)}
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-md border transition-all flex items-center gap-1 ${
+                        className={`text-xs font-bold px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1 ${
                           isSelected
                             ? isNkdaBtn
-                              ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-600 shadow-xs'
                               : isUnknownBtn
-                              ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                              : 'bg-rose-600 text-white border-rose-600 shadow-xs'
+                              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-500 shadow-xs'
+                              : 'bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-600 shadow-xs'
                             : isNkdaBtn
                             ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
                             : isUnknownBtn
                             ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
-                            : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:border-slate-400'
+                            : 'bg-white text-slate-700 border-amber-200/80 hover:bg-rose-50 hover:border-rose-300 hover:text-rose-800'
                         }`}
                       >
                         {isSelected && <span>✓</span>}
@@ -528,7 +527,7 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
               </div>
 
               {/* Documentation Clarification Banner */}
-              <div className="pt-2 border-t border-amber-200/80 flex items-start gap-2 text-[11px] text-amber-900">
+              <div className="pt-2.5 border-t border-amber-200/80 flex items-start gap-2 text-[11px] text-amber-950/90">
                 <Info className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
                 <p>
                   <strong>Print Compliance:</strong> In accordance with clinical nursing care plan formatting standards, allergy details are maintained in this electronic chart record and are <strong>not printed</strong> on the physical A4 care plan sheet.
@@ -540,17 +539,17 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
 
         {/* Right Preview Column: Live Previews (4 Cols) */}
         <div className="lg:col-span-4 flex flex-col justify-start">
-          <div className="p-4 bg-slate-900 text-white rounded-xl shadow-sm border border-slate-800 relative overflow-hidden space-y-3">
+          <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-teal-950 text-white rounded-2xl shadow-md border border-indigo-500/25 relative overflow-hidden space-y-3.5">
             {/* Header Tabs */}
-            <div className="flex items-center justify-between pb-2.5 border-b border-slate-800 gap-2">
-              <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-xs flex-wrap">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10 gap-2">
+              <div className="flex items-center bg-slate-950/60 p-1 rounded-xl border border-white/10 text-xs flex-wrap gap-1 w-full">
                 <button
                   type="button"
                   onClick={() => setPreviewTab('bedside')}
-                  className={`px-2 py-1 rounded font-bold transition-all flex items-center gap-1 ${
+                  className={`px-2.5 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
                     previewTab === 'bedside'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-xs'
+                      : 'text-sky-200/80 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <Tag className="w-3 h-3" />
@@ -559,36 +558,36 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                 <button
                   type="button"
                   onClick={() => setPreviewTab('file_card')}
-                  className={`px-2 py-1 rounded font-bold transition-all flex items-center gap-1 ${
+                  className={`px-2.5 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
                     previewTab === 'file_card'
-                      ? 'bg-emerald-600 text-white shadow-xs font-black'
-                      : 'text-emerald-400 hover:text-white'
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xs'
+                      : 'text-emerald-300/90 hover:text-white hover:bg-white/10'
                   }`}
                   title="View 9x7cm File Attached Inpatient Card"
                 >
-                  <FileText className="w-3 h-3 text-emerald-400" />
-                  <span>File Card (9×7)</span>
+                  <FileText className="w-3 h-3" />
+                  <span>File Card</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setPreviewTab('id_tag')}
-                  className={`px-2 py-1 rounded font-bold transition-all flex items-center gap-1 ${
+                  className={`px-2.5 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
                     previewTab === 'id_tag'
-                      ? 'bg-emerald-600 text-white shadow-xs font-black'
-                      : 'text-emerald-400 hover:text-white'
+                      ? 'bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white shadow-xs'
+                      : 'text-violet-300/90 hover:text-white hover:bg-white/10'
                   }`}
                   title="View 1.8×6.7cm Vertical Specimen & Wristband ID Tag"
                 >
-                  <Scissors className="w-3 h-3 text-emerald-400" />
-                  <span>ID Tag (1.8×6.7)</span>
+                  <Scissors className="w-3 h-3" />
+                  <span>ID Tag</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setPreviewTab('label')}
-                  className={`px-2 py-1 rounded font-bold transition-all flex items-center gap-1 ${
+                  className={`px-2.5 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
                     previewTab === 'label'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xs'
+                      : 'text-amber-200/85 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <Tag className="w-3 h-3" />
@@ -600,38 +599,37 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
             {/* TAB 1: BEDSIDE & DOOR LABEL SHEET (EXACT ATTACHED FILE TEMPLATE) */}
             {previewTab === 'bedside' && (
               <div className="space-y-3 animate-in fade-in duration-150">
-                <div className="flex items-center justify-between text-[11px] text-slate-300">
-                  <span className="font-bold text-emerald-400 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <div className="flex items-center justify-between text-xs text-sky-100">
+                  <span className="font-bold text-cyan-300">
                     Exact Attached Template Layout
                   </span>
-                  <span className="font-mono text-[10px] text-slate-400">A4 Landscape</span>
+                  <span className="font-mono tabular-nums text-[11px] text-sky-200/75">A4 Landscape</span>
                 </div>
 
                 {/* Scaled Render of Bedside Card Sheet */}
-                <div className="bg-slate-950/60 rounded-lg p-2 shadow-md overflow-x-auto border border-slate-700">
+                <div className="bg-slate-950/70 rounded-xl p-2 shadow-md overflow-x-auto border border-white/10">
                   <div className="min-w-[750px] transform scale-[0.48] sm:scale-[0.52] md:scale-[0.55] lg:scale-[0.42] origin-top-left h-[105mm]">
                     <PrintableBedsideCardSheet patient={patient} showDimensionBadges={true} />
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/80 text-[11px] text-slate-300 space-y-1.5">
+                <div className="p-3 rounded-xl bg-white/8 border border-white/12 text-[11px] text-sky-100 space-y-1.5">
                   <div className="font-bold text-white flex items-center justify-between">
-                    <span>Card Dimensions (A4 Sheet):</span>
-                    <span className="text-emerald-400 font-mono text-[10px]">Exact Hospital Sizes</span>
+                    <span>Card Dimensions (A4 Sheet)</span>
+                    <span className="text-emerald-300 font-mono text-[10px]">Exact Hospital Sizes</span>
                   </div>
-                  <ul className="space-y-1 text-slate-300 text-[10px]">
-                    <li className="flex items-center justify-between">
-                      <span><strong>• Bedside Cards</strong> (Name, Caring Dr):</span>
-                      <span className="font-mono font-bold text-blue-300 bg-slate-700/60 px-1 py-0.5 rounded">9 × 7 cm</span>
+                  <ul className="space-y-1 text-sky-100/85 text-[10.5px]">
+                    <li className="flex items-center justify-between gap-2">
+                      <span>Bedside Cards (Name, Caring Dr)</span>
+                      <span className="font-mono tabular-nums font-bold text-sky-300 shrink-0">9 × 7 cm</span>
                     </li>
-                    <li className="flex items-center justify-between">
-                      <span><strong>• File Attached Cards</strong> (Admission, Ward, Bed, ID...):</span>
-                      <span className="font-mono font-bold text-blue-300 bg-slate-700/60 px-1 py-0.5 rounded">9 × 7 cm</span>
+                    <li className="flex items-center justify-between gap-2">
+                      <span>File Attached Cards (Full 9 Fields)</span>
+                      <span className="font-mono tabular-nums font-bold text-violet-300 shrink-0">9 × 7 cm</span>
                     </li>
-                    <li className="flex items-center justify-between">
-                      <span><strong>• Vertical ID Tags</strong> (Tube / Specimen / Wristband):</span>
-                      <span className="font-mono font-bold text-emerald-300 bg-slate-700/60 px-1 py-0.5 rounded">1.8 × 6.7 cm</span>
+                    <li className="flex items-center justify-between gap-2">
+                      <span>Vertical ID Tags (Tube / Wristband)</span>
+                      <span className="font-mono tabular-nums font-bold text-emerald-300 shrink-0">1.8 × 6.7 cm</span>
                     </li>
                   </ul>
                 </div>
@@ -641,17 +639,16 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
             {/* TAB 2: DEDICATED FILE ATTACHED CARD PREVIEW (9x7 cm) */}
             {previewTab === 'file_card' && (
               <div className="space-y-3 animate-in fade-in duration-150">
-                <div className="flex items-center justify-between text-[11px] text-slate-300">
-                  <span className="font-bold text-emerald-400 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    File Attached Inpatient Card (9 × 7 cm)
+                <div className="flex items-center justify-between text-xs text-emerald-100">
+                  <span className="font-bold text-emerald-300">
+                    File Attached Inpatient Card
                   </span>
-                  <span className="font-mono text-[10px] text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-700">
+                  <span className="font-mono tabular-nums text-[11px] text-emerald-200/80">
                     90 × 70 mm
                   </span>
                 </div>
 
-                <div className="flex justify-center p-2 bg-slate-950/80 rounded-lg border border-slate-700">
+                <div className="flex justify-center p-2.5 bg-slate-950/75 rounded-xl border border-emerald-400/20">
                   <div
                     className="border-[3px] border-[#002878] bg-white text-black p-2.5 flex flex-col justify-between overflow-hidden rounded-xs shadow-xl font-sans"
                     style={{
@@ -668,8 +665,8 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                   </div>
                 </div>
 
-                <p className="text-[10px] text-slate-400 text-center">
-                  This card appears in the right column of the A4 sheet (Top-Right & Bottom-Right) for attaching directly to inpatient files and Kardex charts.
+                <p className="text-[11px] text-sky-100/75 text-center leading-relaxed">
+                  Appears in the right column of the A4 sheet (Top-Right & Bottom-Right) for attaching directly to inpatient files and Kardex charts.
                 </p>
               </div>
             )}
@@ -677,68 +674,66 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
             {/* TAB 3: DEDICATED ID TAG PREVIEW (1.8x6.7 cm) */}
             {previewTab === 'id_tag' && (
               <div className="space-y-3 animate-in fade-in duration-150">
-                <div className="flex items-center justify-between text-[11px] text-slate-300">
-                  <span className="font-bold text-emerald-400 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Specimen & Wristband ID Tag (1.8 × 6.7 cm)
+                <div className="flex items-center justify-between text-xs text-violet-100">
+                  <span className="font-bold text-violet-300">
+                    Specimen & Wristband ID Tags
                   </span>
-                  <span className="font-mono text-[10px] text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-700">
+                  <span className="font-mono tabular-nums text-[11px] text-violet-200/80">
                     18 × 67 mm
                   </span>
                 </div>
 
-                <div className="flex flex-col items-center justify-center p-3 bg-slate-950/80 rounded-lg border border-slate-700 space-y-3">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase">1:1 Physical Size Output</span>
+                <div className="flex flex-col items-center justify-center p-3.5 bg-slate-950/75 rounded-xl border border-violet-400/20 space-y-3">
+                  <span className="text-[11px] text-violet-200/80 font-semibold">1:1 Physical Size Output</span>
                   <div className="flex items-center justify-center gap-4 py-1">
                     <IdTagCard patient={patient} id="form-preview-id-tag-1" />
                     <IdTagCard patient={patient} id="form-preview-id-tag-2" emptyBedNumber={true} />
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/80 text-[10.5px] text-slate-300 space-y-1">
-                  <div className="font-bold text-emerald-400">4-Row Precision Content Calibration:</div>
-                  <div className="text-[10px] text-slate-300 space-y-0.5">
-                    <div>• <strong>Row 1:</strong> Date ({formatShortDate(patient.dateOfAdmission)}) & Ward/Bed ({formatWardBed(patient)})</div>
-                    <div>• <strong>Row 2:</strong> {patient.fullName || 'Patient Full Name'} (Bold Uppercase)</div>
-                    <div>• <strong>Row 3:</strong> CPR {patient.idNumber || '—'} • {patient.age ? `${patient.age} YRS` : '— YRS'} ({patient.sex ? (patient.sex.toUpperCase().startsWith('M') ? 'M' : 'F') : '—'}) • {(patient.nationality || 'BAHRAINI').toUpperCase()}</div>
-                    <div>• <strong>Row 4:</strong> C/O {getDoctorDisplay(patient.caringDoctor).full} • ALLERGY: {formatAllergy(patient.allergies)}</div>
+                <div className="p-3 rounded-xl bg-white/8 border border-white/12 text-[10.5px] text-sky-100/85 space-y-1">
+                  <div className="font-bold text-violet-300">4-Row Precision Content Calibration</div>
+                  <div className="text-[10.5px] space-y-0.5 tabular-nums">
+                    <div><strong className="text-white">Row 1:</strong> {formatShortDate(patient.dateOfAdmission)} · {formatWardBed(patient)}</div>
+                    <div><strong className="text-white">Row 2:</strong> {patient.fullName || 'Patient Full Name'}</div>
+                    <div><strong className="text-white">Row 3:</strong> CPR {patient.idNumber || '—'} · {patient.age ? `${patient.age} YRS` : '— YRS'} ({patient.sex ? (patient.sex.toUpperCase().startsWith('M') ? 'M' : 'F') : '—'}) · {(patient.nationality || 'BAHRAINI').toUpperCase()}</div>
+                    <div><strong className="text-white">Row 4:</strong> C/O {getDoctorDisplay(patient.caringDoctor).full} · ALLERGY: {formatAllergy(patient.allergies)}</div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* TAB 2: UPPER-RIGHT CARE PLAN LABEL PREVIEW */}
+            {/* TAB 4: UPPER-RIGHT CARE PLAN LABEL PREVIEW */}
             {previewTab === 'label' && (
               <div className="space-y-3 animate-in fade-in duration-150">
-                <div className="flex items-center justify-between text-[11px] text-slate-300">
-                  <span className="font-bold text-blue-400 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                <div className="flex items-center justify-between text-xs text-amber-100">
+                  <span className="font-bold text-amber-300">
                     Upper-Right Print Label Preview
                   </span>
-                  <span className="font-mono text-[10px] text-slate-400">Kardex Sticker</span>
+                  <span className="font-mono text-[11px] text-amber-200/75">Kardex Sticker</span>
                 </div>
 
                 {/* The exact official inpatient label formatting */}
                 <div
                   id="upper-right-patient-label-preview"
-                  className="bg-white text-slate-900 p-3.5 rounded-lg border border-slate-300 shadow-sm font-sans text-xs space-y-2"
+                  className="bg-white text-slate-900 p-3.5 rounded-xl border border-amber-300/40 shadow-md font-sans text-xs space-y-2"
                 >
                   <div className="flex justify-between items-start border-b border-slate-200 pb-1.5">
                     <div>
-                      <span className="text-[10px] text-slate-500 block uppercase font-semibold">Patient Full Name</span>
+                      <span className="text-[10px] text-slate-500 block font-semibold">Patient Full Name</span>
                       <p className="font-bold text-sm text-slate-900 tracking-tight">
                         {patient.fullName || '— [Full Name Required] —'}
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] text-slate-500 block uppercase font-semibold">ID / CPR</span>
-                      <span className="font-mono font-bold text-xs bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 text-slate-800">
+                      <span className="text-[10px] text-slate-500 block font-semibold">ID / CPR</span>
+                      <span className="font-mono tabular-nums font-bold text-xs text-indigo-800">
                         {patient.idNumber || 'CPR-XXXXXXX'}
                       </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-1 text-[11px] border-b border-slate-200 pb-1.5">
+                  <div className="grid grid-cols-3 gap-1 text-[11px] border-b border-slate-200 pb-1.5 tabular-nums">
                     <div>
                       <span className="text-[9px] text-slate-500 block">AGE</span>
                       <span className="font-bold">{patient.age ? `${patient.age} yrs` : '—'}</span>
@@ -753,17 +748,17 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-1.5 text-[11px] border-b border-slate-200 pb-1.5">
+                  <div className="grid grid-cols-3 gap-1.5 text-[11px] border-b border-slate-200 pb-1.5 tabular-nums">
                     <div>
-                      <span className="text-[9px] text-slate-500 block uppercase font-semibold">WARD NO.</span>
+                      <span className="text-[9px] text-slate-500 block font-semibold">WARD NO.</span>
                       <span className="font-bold text-slate-900 truncate block">{wardDisplay || '—'}</span>
                     </div>
                     <div>
-                      <span className="text-[9px] text-slate-500 block uppercase font-semibold">BED NO.</span>
+                      <span className="text-[9px] text-slate-500 block font-semibold">BED NO.</span>
                       <span className="font-bold text-blue-700 truncate block">{bedDisplay || '—'}</span>
                     </div>
                     <div>
-                      <span className="text-[9px] text-slate-500 block uppercase font-semibold">ADMISSION</span>
+                      <span className="text-[9px] text-slate-500 block font-semibold">ADMISSION</span>
                       <span className="font-bold truncate block">{patient.dateOfAdmission || '—'}</span>
                     </div>
                   </div>
@@ -774,30 +769,30 @@ export const PatientDemographicsForm: React.FC<PatientDemographicsFormProps> = (
                   </div>
                 </div>
 
-                {/* Inpatient Allergy Status Badge in Preview */}
-                <div className="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs">
-                  <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">
-                    <span>Inpatient Allergy Status:</span>
-                    <span className="text-amber-400 font-normal">Not in care plan print</span>
+                {/* Inpatient Allergy Status in Preview */}
+                <div className="p-3 rounded-xl bg-white/8 border border-white/12 text-xs">
+                  <div className="flex items-center justify-between text-[11px] text-sky-200/80 font-semibold mb-1">
+                    <span>Inpatient Allergy Status</span>
+                    <span className="text-amber-300 font-normal">Not in care plan print</span>
                   </div>
-                  <div className="text-xs font-semibold">
+                  <div className="text-xs font-bold">
                     {isNkda ? (
-                      <span className="text-emerald-400 flex items-center gap-1">
+                      <span className="text-emerald-300 flex items-center gap-1.5">
                         <ShieldCheck className="w-3.5 h-3.5" />
                         {patient.allergies || 'NKDA'}
                       </span>
                     ) : isUnknownAllergy ? (
-                      <span className="text-amber-400 flex items-center gap-1">
+                      <span className="text-amber-300 flex items-center gap-1.5">
                         <AlertTriangle className="w-3.5 h-3.5" />
                         {patient.allergies || 'Unknown Drug Allergy'}
                       </span>
                     ) : hasSpecificAllergies ? (
-                      <span className="text-rose-400 flex items-center gap-1">
+                      <span className="text-rose-300 flex items-center gap-1.5">
                         <AlertTriangle className="w-3.5 h-3.5" />
                         {patient.allergies}
                       </span>
                     ) : (
-                      <span className="text-slate-400 italic">
+                      <span className="text-slate-300 italic">
                         — Unknown Drug Allergy —
                       </span>
                     )}
