@@ -5,8 +5,10 @@ import governmentHospitalsLogo from '../assets/images/bahrain_gov_hospitals_logo
 interface PrintableCarePlanProps {
   patient: PatientDemographics;
   carePlan: NursingCarePlan;
-  planNumber: 1 | 2;
+  planNumber: number;
   totalPlans?: number;
+  pageNumber?: number;
+  totalPages?: number;
 }
 
 export const PrintableCarePlan: React.FC<PrintableCarePlanProps> = ({
@@ -14,8 +16,12 @@ export const PrintableCarePlan: React.FC<PrintableCarePlanProps> = ({
   carePlan,
   planNumber,
   totalPlans = 2,
+  pageNumber,
+  totalPages,
 }) => {
-  const isMultiPage = planNumber < totalPlans;
+  const effectivePageNumber = pageNumber ?? planNumber;
+  const effectiveTotalPages = totalPages ?? totalPlans;
+  const isMultiPage = effectivePageNumber < effectiveTotalPages;
 
   return (
     <div
@@ -310,7 +316,7 @@ export const PrintableCarePlan: React.FC<PrintableCarePlanProps> = ({
         {/* Documentation Standard and Accreditation Bar */}
         <div className="pt-1.5 flex items-center justify-between text-[8.5px] text-slate-600 print:text-black border-t border-slate-300 print:border-black font-mono">
           <span>{patient.hospitalName ? `${patient.hospitalName.toUpperCase()} • QUALITY DEPARTMENT` : 'SALMANIYA MEDICAL COMPLEX • QUALITY DEPARTMENT'}</span>
-          <span>Care Plan #{planNumber} • Page {planNumber} of {totalPlans}</span>
+          <span>Care Plan #{planNumber} • Page {effectivePageNumber} of {effectiveTotalPages}</span>
         </div>
       </div>
     </div>

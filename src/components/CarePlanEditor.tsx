@@ -1,24 +1,84 @@
-import React, { useState } from 'react';
-import { NursingCarePlan, NandaItem } from '../types';
+import React from 'react';
+import { NursingCarePlan } from '../types';
 import { NANDA_DATABASE } from '../data/nandaData';
-import { Search, Calendar, AlertTriangle, Target, ClipboardList, CheckCircle2, Copy, Sparkles, BookOpen, RefreshCw, Trash2, ArrowRightLeft, UserCheck, Award, RotateCcw } from 'lucide-react';
+import {
+  Search,
+  Calendar,
+  AlertTriangle,
+  Target,
+  ClipboardList,
+  CheckCircle2,
+  Sparkles,
+  BookOpen,
+  Trash2,
+  ArrowRightLeft,
+  ArrowUp,
+  ArrowDown,
+  UserCheck,
+  Award,
+  RotateCcw,
+} from 'lucide-react';
 
 interface CarePlanEditorProps {
   plan: NursingCarePlan;
-  planNumber: 1 | 2;
+  planNumber: number;
+  totalPlans?: number;
   onChange: (updated: NursingCarePlan) => void;
   onOpenNandaSearch: () => void;
-  onSwapWithOtherPlan?: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
   onClearPlan?: () => void;
+  onRemovePlan?: () => void;
 }
+
+const PLAN_THEMES = [
+  {
+    border: 'border-sky-200/90',
+    headerBg: 'bg-gradient-to-r from-sky-50 via-blue-50/90 to-cyan-50/75 border-sky-100',
+    badgeBg: 'bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-600',
+    accentText: 'text-sky-700',
+    ctaBg: 'bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 hover:from-blue-700 hover:to-sky-700',
+  },
+  {
+    border: 'border-violet-200/90',
+    headerBg: 'bg-gradient-to-r from-violet-50 via-purple-50/90 to-fuchsia-50/75 border-violet-100',
+    badgeBg: 'bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600',
+    accentText: 'text-violet-700',
+    ctaBg: 'bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700',
+  },
+  {
+    border: 'border-emerald-200/90',
+    headerBg: 'bg-gradient-to-r from-emerald-50 via-teal-50/90 to-cyan-50/75 border-emerald-100',
+    badgeBg: 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600',
+    accentText: 'text-emerald-700',
+    ctaBg: 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700',
+  },
+  {
+    border: 'border-amber-200/90',
+    headerBg: 'bg-gradient-to-r from-amber-50 via-orange-50/90 to-yellow-50/75 border-amber-100',
+    badgeBg: 'bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500',
+    accentText: 'text-amber-700',
+    ctaBg: 'bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:to-rose-600',
+  },
+  {
+    border: 'border-rose-200/90',
+    headerBg: 'bg-gradient-to-r from-rose-50 via-pink-50/90 to-fuchsia-50/75 border-rose-100',
+    badgeBg: 'bg-gradient-to-br from-rose-500 via-pink-600 to-purple-600',
+    accentText: 'text-rose-700',
+    ctaBg: 'bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 hover:from-rose-700 hover:to-purple-700',
+  },
+];
 
 export const CarePlanEditor: React.FC<CarePlanEditorProps> = ({
   plan,
   planNumber,
+  totalPlans = 2,
   onChange,
   onOpenNandaSearch,
-  onSwapWithOtherPlan,
+  onMoveUp,
+  onMoveDown,
   onClearPlan,
+  onRemovePlan,
 }) => {
   const handleFieldChange = (field: keyof NursingCarePlan, value: any) => {
     onChange({
@@ -56,29 +116,27 @@ export const CarePlanEditor: React.FC<CarePlanEditorProps> = ({
     }
   };
 
-  const isPlan1 = planNumber === 1;
+  const theme = PLAN_THEMES[(planNumber - 1) % PLAN_THEMES.length];
+  const prioritySubtitle =
+    planNumber === 1
+      ? 'Priority Diagnosis 1'
+      : planNumber === 2
+      ? 'Secondary Priority 2'
+      : `Additional Care Plan #${planNumber}`;
+
+  const showSimpleSwap = totalPlans === 2 && (onMoveUp || onMoveDown);
 
   return (
     <div
-      className={`bg-white/95 backdrop-blur-xs rounded-2xl border shadow-sm overflow-hidden flex flex-col ${
-        isPlan1 ? 'border-sky-200/90' : 'border-violet-200/90'
-      }`}
+      className={`bg-white/95 backdrop-blur-xs rounded-2xl border shadow-sm overflow-hidden flex flex-col ${theme.border}`}
     >
       {/* Header Bar */}
       <div
-        className={`px-6 py-4 border-b flex flex-wrap items-center justify-between gap-3 ${
-          isPlan1
-            ? 'bg-gradient-to-r from-sky-50 via-blue-50/90 to-cyan-50/75 border-sky-100'
-            : 'bg-gradient-to-r from-violet-50 via-purple-50/90 to-fuchsia-50/75 border-violet-100'
-        }`}
+        className={`px-6 py-4 border-b flex flex-wrap items-center justify-between gap-3 ${theme.headerBg}`}
       >
         <div className="flex items-center gap-3">
           <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-white shadow-sm ${
-              isPlan1
-                ? 'bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-600'
-                : 'bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600'
-            }`}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-white shadow-sm shrink-0 ${theme.badgeBg}`}
           >
             #{planNumber}
           </div>
@@ -87,12 +145,8 @@ export const CarePlanEditor: React.FC<CarePlanEditorProps> = ({
               <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
                 Nursing Care Plan #{planNumber}
               </h3>
-              <span
-                className={`text-xs font-bold ${
-                  isPlan1 ? 'text-sky-700' : 'text-violet-700'
-                }`}
-              >
-                · {isPlan1 ? 'Priority Diagnosis 1' : 'Secondary Priority 2'}
+              <span className={`text-xs font-bold ${theme.accentText}`}>
+                · {prioritySubtitle}
               </span>
             </div>
             <p className="text-xs text-slate-600">
@@ -102,42 +156,74 @@ export const CarePlanEditor: React.FC<CarePlanEditorProps> = ({
         </div>
 
         {/* Quick Actions Toolbar */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {onClearPlan && (
             <button
               id={`clear-plan-${planNumber}-btn`}
               type="button"
               onClick={onClearPlan}
-              className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold border border-rose-200 transition-all text-xs flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
+              className="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold border border-amber-200 transition-all text-xs flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
               title={`Clear all fields in Care Plan #${planNumber}`}
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Clear Plan</span>
+              <span className="hidden sm:inline">Clear</span>
             </button>
           )}
 
-          {onSwapWithOtherPlan && (
+          {onRemovePlan && totalPlans > 1 && (
+            <button
+              id={`remove-plan-${planNumber}-btn`}
+              type="button"
+              onClick={onRemovePlan}
+              className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold border border-rose-200 transition-all text-xs flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
+              title={`Remove Care Plan #${planNumber}`}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Remove</span>
+            </button>
+          )}
+
+          {showSimpleSwap ? (
             <button
               id={`swap-plan-${planNumber}-btn`}
               type="button"
-              onClick={onSwapWithOtherPlan}
+              onClick={onMoveUp || onMoveDown}
               className="px-3 py-1.5 rounded-lg bg-white hover:bg-indigo-50 text-indigo-800 font-bold text-xs border border-indigo-200 transition-all flex items-center gap-1.5 shadow-xs whitespace-nowrap"
               title="Swap priority order between Plan 1 and Plan 2"
             >
               <ArrowRightLeft className="w-3.5 h-3.5 text-indigo-600" />
-              <span className="hidden sm:inline">Swap Priority (1 ⇄ 2)</span>
+              <span className="hidden sm:inline">Swap Priority</span>
             </button>
+          ) : (
+            totalPlans > 2 && (
+              <div className="flex items-center bg-white rounded-lg border border-indigo-200 overflow-hidden shadow-xs">
+                <button
+                  type="button"
+                  disabled={!onMoveUp}
+                  onClick={onMoveUp}
+                  className="px-2 py-1.5 text-indigo-700 hover:bg-indigo-50 disabled:opacity-35 disabled:hover:bg-white transition-colors border-r border-indigo-100"
+                  title="Move plan higher in priority"
+                >
+                  <ArrowUp className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  disabled={!onMoveDown}
+                  onClick={onMoveDown}
+                  className="px-2 py-1.5 text-indigo-700 hover:bg-indigo-50 disabled:opacity-35 disabled:hover:bg-white transition-colors"
+                  title="Move plan lower in priority"
+                >
+                  <ArrowDown className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )
           )}
 
           <button
             id={`open-nanda-modal-btn-${planNumber}`}
             type="button"
             onClick={onOpenNandaSearch}
-            className={`px-3.5 py-2 rounded-xl text-white font-bold text-xs shadow-sm hover:shadow transition-all flex items-center gap-1.5 whitespace-nowrap ${
-              isPlan1
-                ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 hover:from-blue-700 hover:to-sky-700'
-                : 'bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700'
-            }`}
+            className={`px-3.5 py-2 rounded-xl text-white font-bold text-xs shadow-sm hover:shadow transition-all flex items-center gap-1.5 whitespace-nowrap ${theme.ctaBg}`}
           >
             <Search className="w-3.5 h-3.5" />
             <span>Search NANDA List</span>

@@ -16,7 +16,7 @@ export interface PatientDemographics {
 
 export interface NursingCarePlan {
   id: string;
-  planNumber: 1 | 2;
+  planNumber: number;
   title: string;
   nandaCode?: string;
   diagnosis: string;
@@ -42,6 +42,7 @@ export interface InpatientRecord {
   patient: PatientDemographics;
   carePlan1: NursingCarePlan;
   carePlan2: NursingCarePlan;
+  carePlans?: NursingCarePlan[];
 }
 
 export type ClinicalSpecialty =

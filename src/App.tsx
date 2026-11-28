@@ -7,7 +7,7 @@ import { NandaSearchModal } from './components/NandaSearchModal';
 import { PrintableCarePlan } from './components/PrintableCarePlan';
 import { PrintableBedsideCardSheet } from './components/PrintableBedsideCardSheet';
 import { ResponsiveBedsideSheetView } from './components/ResponsiveBedsideSheetView';
-import { PrintPreviewModal, PrintDocumentType } from './components/PrintPreviewModal';
+import { PrintPreviewModal, PrintDocumentType, PrintCarePlanScope } from './components/PrintPreviewModal';
 import { SavedRecordsModal } from './components/SavedRecordsModal';
 import governmentHospitalsLogo from './assets/images/bahrain_gov_hospitals_logo_1787046319692.jpg';
 import {
@@ -53,25 +53,17 @@ const BLANK_INITIAL_PATIENT: PatientDemographics = {
   allergies: 'Unknown Drug Allergy',
 };
 
-const BLANK_INITIAL_CARE_PLAN_1: NursingCarePlan = {
-  id: 'cp1-initial',
-  planNumber: 1,
-  title: 'Priority Nursing Care Plan #1',
-  nandaCode: '',
-  diagnosis: '',
-  domain: '',
-  dateOfOnset: '',
-  relatedFactors: '',
-  expectedOutcome: '',
-  interventions: '',
-  evaluation: '',
-  status: 'Active',
-};
+type ActiveTab = 'demographics' | 'bedside-sheet' | 'split' | `plan-${number}`;
 
-const BLANK_INITIAL_CARE_PLAN_2: NursingCarePlan = {
-  id: 'cp2-initial',
-  planNumber: 2,
-  title: 'Secondary Nursing Care Plan #2',
+const createBlankCarePlan = (planNumber: number): NursingCarePlan => ({
+  id: `cp-${planNumber}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+  planNumber,
+  title:
+    planNumber === 1
+      ? 'Priority Nursing Care Plan #1'
+      : planNumber === 2
+      ? 'Secondary Nursing Care Plan #2'
+      : `Additional Nursing Care Plan #${planNumber}`,
   nandaCode: '',
   diagnosis: '',
   domain: '',
@@ -81,28 +73,63 @@ const BLANK_INITIAL_CARE_PLAN_2: NursingCarePlan = {
   interventions: '',
   evaluation: '',
   status: 'Active',
-};
+});
+
+const getInitialCarePlans = (): NursingCarePlan[] => [
+  createBlankCarePlan(1),
+  createBlankCarePlan(2),
+];
+
+const PLAN_TAB_STYLES = [
+  {
+    active: 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-sm',
+    inactiveHover: 'hover:text-sky-700',
+    activeIcon: 'text-sky-100',
+    inactiveIcon: 'text-sky-600',
+  },
+  {
+    active: 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-sm',
+    inactiveHover: 'hover:text-violet-700',
+    activeIcon: 'text-violet-100',
+    inactiveIcon: 'text-violet-600',
+  },
+  {
+    active: 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm',
+    inactiveHover: 'hover:text-emerald-700',
+    activeIcon: 'text-emerald-100',
+    inactiveIcon: 'text-emerald-600',
+  },
+  {
+    active: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm',
+    inactiveHover: 'hover:text-amber-700',
+    activeIcon: 'text-amber-100',
+    inactiveIcon: 'text-amber-600',
+  },
+  {
+    active: 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-sm',
+    inactiveHover: 'hover:text-rose-700',
+    activeIcon: 'text-rose-100',
+    inactiveIcon: 'text-rose-600',
+  },
+];
 
 export default function App() {
   // Current active patient demographics (starts completely empty)
   const [patient, setPatient] = useState<PatientDemographics>(BLANK_INITIAL_PATIENT);
 
-  // Care Plan 1 (Priority 1)
-  const [carePlan1, setCarePlan1] = useState<NursingCarePlan>(BLANK_INITIAL_CARE_PLAN_1);
+  // Dynamic list of Nursing Care Plans (starts with 2 plans, users can add more)
+  const [carePlans, setCarePlans] = useState<NursingCarePlan[]>(() => getInitialCarePlans());
 
-  // Care Plan 2 (Priority 2)
-  const [carePlan2, setCarePlan2] = useState<NursingCarePlan>(BLANK_INITIAL_CARE_PLAN_2);
+  // Active Tab for editing: 'demographics' | 'bedside-sheet' | 'plan-1' | 'plan-2' | ... | 'split'
+  const [activeTab, setActiveTab] = useState<ActiveTab>('demographics');
 
-  // Active Tab for editing on mobile/single view: 'demographics' | 'bedside-sheet' | 'plan1' | 'plan2' | 'split'
-  const [activeTab, setActiveTab] = useState<'demographics' | 'bedside-sheet' | 'plan1' | 'plan2' | 'split'>('demographics');
-
-  // NANDA Search Modal State
+  // NANDA Search Modal State (1-based plan number)
   const [nandaModalOpen, setNandaModalOpen] = useState(false);
-  const [nandaTargetPlan, setNandaTargetPlan] = useState<1 | 2>(1);
+  const [nandaTargetPlanIndex, setNandaTargetPlanIndex] = useState<number>(0);
 
   // Print Preview Modal, print scope, and document type
   const [printPreviewOpen, setPrintPreviewOpen] = useState(false);
-  const [printScope, setPrintScope] = useState<'both' | 'plan1' | 'plan2'>('both');
+  const [printScope, setPrintScope] = useState<PrintCarePlanScope>('all');
   const [printDocType, setPrintDocType] = useState<PrintDocumentType>('bedside');
   const [showBedsideDimensions, setShowBedsideDimensions] = useState<boolean>(true);
 
@@ -158,11 +185,21 @@ export default function App() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Load a record from saved records
+  // Load a record from saved records (supports both legacy 2-plan and multi-plan records)
   const handleLoadRecord = (record: InpatientRecord) => {
+    const loadedPlans =
+      record.carePlans && record.carePlans.length > 0
+        ? record.carePlans.map((p, idx) => ({ ...p, planNumber: idx + 1 }))
+        : [record.carePlan1, record.carePlan2]
+            .filter(Boolean)
+            .map((p, idx) => ({ ...p, planNumber: idx + 1 }));
+
     setPatient(record.patient);
-    setCarePlan1(record.carePlan1);
-    setCarePlan2(record.carePlan2);
+    setCarePlans(loadedPlans.length > 0 ? loadedPlans : getInitialCarePlans());
+    setPrintScope('all');
+    if (activeTab.startsWith('plan-')) {
+      setActiveTab('plan-1');
+    }
     showToast(`Loaded care plan: ${record.patient.fullName}`);
   };
 
@@ -188,10 +225,68 @@ export default function App() {
     showToast('Sample inpatient presets restored');
   };
 
-  // Open NANDA search modal for a specific plan
-  const handleOpenNandaSearch = (planNum: 1 | 2) => {
-    setNandaTargetPlan(planNum);
+  // Open NANDA search modal for a specific plan index (0-based)
+  const handleOpenNandaSearch = (planIndex: number) => {
+    setNandaTargetPlanIndex(planIndex);
     setNandaModalOpen(true);
+  };
+
+  // Update a single care plan by index
+  const handleUpdateCarePlan = (index: number, updated: NursingCarePlan) => {
+    setCarePlans((prev) => prev.map((plan, idx) => (idx === index ? { ...updated, planNumber: idx + 1 } : plan)));
+  };
+
+  // Add a new blank care plan
+  const handleAddCarePlan = () => {
+    const newNumber = carePlans.length + 1;
+    const newPlan = createBlankCarePlan(newNumber);
+    setCarePlans((prev) => [...prev, newPlan]);
+    if (activeTab !== 'split') {
+      setActiveTab(`plan-${newNumber}`);
+    }
+    showToast(`Added Nursing Care Plan #${newNumber}`);
+  };
+
+  // Remove a care plan by index (at least 1 plan must remain)
+  const handleRemoveCarePlan = (index: number) => {
+    if (carePlans.length <= 1) return;
+    const removedNum = index + 1;
+    const nextPlans = carePlans
+      .filter((_, idx) => idx !== index)
+      .map((plan, idx) => ({ ...plan, planNumber: idx + 1 }));
+
+    setCarePlans(nextPlans);
+    setPrintScope('all');
+
+    if (activeTab.startsWith('plan-')) {
+      const currentNum = Number(activeTab.replace('plan-', ''));
+      if (currentNum === removedNum) {
+        const fallbackNum = Math.min(removedNum, nextPlans.length);
+        setActiveTab(`plan-${fallbackNum}`);
+      } else if (currentNum > removedNum) {
+        setActiveTab(`plan-${currentNum - 1}`);
+      }
+    }
+    showToast(`Removed Care Plan #${removedNum}`);
+  };
+
+  // Move a care plan up (-1) or down (+1) in priority order
+  const handleMoveCarePlan = (index: number, direction: -1 | 1) => {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= carePlans.length) return;
+
+    setCarePlans((prev) => {
+      const copy = [...prev];
+      const temp = copy[index];
+      copy[index] = copy[targetIndex];
+      copy[targetIndex] = temp;
+      return copy.map((plan, idx) => ({ ...plan, planNumber: idx + 1 }));
+    });
+
+    if (activeTab === `plan-${index + 1}`) {
+      setActiveTab(`plan-${targetIndex + 1}`);
+    }
+    showToast(`Moved Care Plan #${index + 1} to Position #${targetIndex + 1}`);
   };
 
   // When NANDA is selected from modal
@@ -207,44 +302,23 @@ export default function App() {
       .map((text, idx) => `${idx + 1}. ${text}`)
       .join('\n');
 
-    const updater = (prev: NursingCarePlan): NursingCarePlan => ({
-      ...prev,
-      diagnosis: item.diagnosis,
-      nandaCode: item.code || '',
-      domain: item.domain,
-      relatedFactors: `• ${formattedFactors}`,
-      expectedOutcome: `• ${formattedOutcomes}`,
-      interventions: formattedInterventions,
-      dateOfOnset: prev.dateOfOnset || patient.dateOfAdmission || new Date().toISOString().split('T')[0],
-    });
-
-    if (nandaTargetPlan === 1) {
-      setCarePlan1(updater);
-      showToast(`Applied "${item.diagnosis}" to Care Plan #1`);
-    } else {
-      setCarePlan2(updater);
-      showToast(`Applied "${item.diagnosis}" to Care Plan #2`);
-    }
-  };
-
-  // Swap Plan 1 and Plan 2 priority
-  const handleSwapPlans = () => {
-    const temp1 = { ...carePlan1, planNumber: 2 as 1 | 2 };
-    const temp2 = { ...carePlan2, planNumber: 1 as 1 | 2 };
-    setCarePlan1(temp2);
-    setCarePlan2(temp1);
-    showToast('Swapped Priority between Care Plan #1 and #2');
-  };
-
-  // Load a sample preset
-  const handleLoadSample = (sampleId: string) => {
-    const found = SAMPLE_PATIENTS.find((s) => s.id === sampleId);
-    if (found) {
-      setPatient(found.patient);
-      setCarePlan1(found.carePlan1);
-      setCarePlan2(found.carePlan2);
-      showToast(`Loaded inpatient preset: ${found.patient.fullName}`);
-    }
+    setCarePlans((prev) =>
+      prev.map((plan, idx) =>
+        idx === nandaTargetPlanIndex
+          ? {
+              ...plan,
+              diagnosis: item.diagnosis,
+              nandaCode: item.code || '',
+              domain: item.domain,
+              relatedFactors: `• ${formattedFactors}`,
+              expectedOutcome: `• ${formattedOutcomes}`,
+              interventions: formattedInterventions,
+              dateOfOnset: plan.dateOfOnset || patient.dateOfAdmission || new Date().toISOString().split('T')[0],
+            }
+          : plan
+      )
+    );
+    showToast(`Applied "${item.diagnosis}" to Care Plan #${nandaTargetPlanIndex + 1}`);
   };
 
   // Clear Demographics only
@@ -253,31 +327,30 @@ export default function App() {
     showToast('Inpatient demographic fields cleared');
   };
 
-  // Clear Care Plan 1
-  const handleClearPlan1 = () => {
-    setCarePlan1(BLANK_INITIAL_CARE_PLAN_1);
-    showToast('Care Plan #1 fields cleared');
+  // Clear a single care plan by index
+  const handleClearPlan = (index: number) => {
+    setCarePlans((prev) =>
+      prev.map((plan, idx) => (idx === index ? { ...createBlankCarePlan(idx + 1), id: plan.id } : plan))
+    );
+    showToast(`Care Plan #${index + 1} fields cleared`);
   };
 
-  // Clear Care Plan 2
-  const handleClearPlan2 = () => {
-    setCarePlan2(BLANK_INITIAL_CARE_PLAN_2);
-    showToast('Care Plan #2 fields cleared');
-  };
-
-  // Clear all fields (Demographics and both Care Plans)
+  // Clear all fields (Demographics and all Care Plans)
   const handleClearAllFields = () => {
     setPatient(BLANK_INITIAL_PATIENT);
-    setCarePlan1(BLANK_INITIAL_CARE_PLAN_1);
-    setCarePlan2(BLANK_INITIAL_CARE_PLAN_2);
+    setCarePlans(getInitialCarePlans());
+    setPrintScope('all');
+    if (activeTab.startsWith('plan-')) {
+      setActiveTab('plan-1');
+    }
     showToast('All fields cleared');
   };
 
   // Create new blank inpatient record
   const handleNewRecord = () => {
     setPatient(BLANK_INITIAL_PATIENT);
-    setCarePlan1(BLANK_INITIAL_CARE_PLAN_1);
-    setCarePlan2(BLANK_INITIAL_CARE_PLAN_2);
+    setCarePlans(getInitialCarePlans());
+    setPrintScope('all');
     setActiveTab('demographics');
     showToast('New blank inpatient care plan initialized');
   };
@@ -296,19 +369,20 @@ export default function App() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       patient,
-      carePlan1,
-      carePlan2,
+      carePlan1: carePlans[0] || createBlankCarePlan(1),
+      carePlan2: carePlans[1] || createBlankCarePlan(2),
+      carePlans,
     };
 
     setSavedRecords((prev) => [newRecord, ...prev.filter((r) => r.patient.idNumber !== patient.idNumber)]);
-    showToast(`Saved care plan for ${patient.fullName}`);
+    showToast(`Saved ${carePlans.length} care plans for ${patient.fullName}`);
   };
 
   // Unified Print & Preview modal opener (context-aware based on current tab)
   const handleOpenPrintPreview = (forcedDocType?: PrintDocumentType) => {
     if (forcedDocType) {
       setPrintDocType(forcedDocType);
-    } else if (activeTab === 'plan1' || activeTab === 'plan2' || activeTab === 'split') {
+    } else if (activeTab.startsWith('plan-') || activeTab === 'split') {
       setPrintDocType('careplans');
     } else if (activeTab === 'bedside-sheet') {
       setPrintDocType('bedside');
@@ -323,6 +397,18 @@ export default function App() {
       window.print();
     }, 60);
   };
+
+  // Determine active care plan index if a single care plan tab is active
+  const activePlanIndex = activeTab.startsWith('plan-') ? Number(activeTab.replace('plan-', '')) - 1 : -1;
+  const activeCarePlan = activePlanIndex >= 0 && activePlanIndex < carePlans.length ? carePlans[activePlanIndex] : null;
+
+  // Selected care plans for browser print container
+  const selectedPlansForPrint =
+    printScope === 'all'
+      ? carePlans.map((plan, idx) => ({ plan, planNumber: idx + 1 }))
+      : carePlans
+          .map((plan, idx) => ({ plan, planNumber: idx + 1 }))
+          .filter((item) => item.planNumber === printScope);
 
   return (
     <div className="min-h-screen app-vibrant-canvas text-slate-900 font-sans flex flex-col">
@@ -520,36 +606,42 @@ export default function App() {
                 <span>2. Bedside & Door Sheet (A4)</span>
               </button>
 
-              <button
-                id="nav-tab-plan1"
-                type="button"
-                onClick={() => setActiveTab('plan1')}
-                className={`px-3.5 py-2 rounded-lg font-bold transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
-                  activeTab === 'plan1'
-                    ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-sm'
-                    : 'text-slate-700 hover:bg-white/80 hover:text-sky-700'
-                }`}
-              >
-                <span>Care Plan #1</span>
-                {carePlan1.diagnosis && (
-                  <CheckCircle className={`w-3.5 h-3.5 ${activeTab === 'plan1' ? 'text-sky-100' : 'text-sky-600'}`} />
-                )}
-              </button>
+              {carePlans.map((plan, idx) => {
+                const planNum = idx + 1;
+                const tabKey: ActiveTab = `plan-${planNum}`;
+                const isActive = activeTab === tabKey;
+                const tabStyle = PLAN_TAB_STYLES[idx % PLAN_TAB_STYLES.length];
+                return (
+                  <button
+                    key={plan.id}
+                    id={`nav-tab-plan-${planNum}`}
+                    type="button"
+                    onClick={() => setActiveTab(tabKey)}
+                    className={`px-3.5 py-2 rounded-lg font-bold transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+                      isActive
+                        ? tabStyle.active
+                        : `text-slate-700 hover:bg-white/80 ${tabStyle.inactiveHover}`
+                    }`}
+                  >
+                    <span>Care Plan #{planNum}</span>
+                    {plan.diagnosis && (
+                      <CheckCircle
+                        className={`w-3.5 h-3.5 ${isActive ? tabStyle.activeIcon : tabStyle.inactiveIcon}`}
+                      />
+                    )}
+                  </button>
+                );
+              })}
 
               <button
-                id="nav-tab-plan2"
+                id="add-care-plan-tab-btn"
                 type="button"
-                onClick={() => setActiveTab('plan2')}
-                className={`px-3.5 py-2 rounded-lg font-bold transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
-                  activeTab === 'plan2'
-                    ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-sm'
-                    : 'text-slate-700 hover:bg-white/80 hover:text-violet-700'
-                }`}
+                onClick={handleAddCarePlan}
+                className="px-3 py-2 rounded-lg font-bold transition-all duration-150 flex items-center gap-1 whitespace-nowrap shrink-0 bg-white hover:bg-emerald-50 text-emerald-700 hover:text-emerald-800 border border-dashed border-emerald-400 hover:border-emerald-500 shadow-2xs"
+                title="Add another nursing care plan for this inpatient"
               >
-                <span>Care Plan #2</span>
-                {carePlan2.diagnosis && (
-                  <CheckCircle className={`w-3.5 h-3.5 ${activeTab === 'plan2' ? 'text-violet-100' : 'text-violet-600'}`} />
-                )}
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Care Plan</span>
               </button>
 
               <button
@@ -561,10 +653,10 @@ export default function App() {
                     ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm'
                     : 'text-slate-700 hover:bg-white/80 hover:text-amber-700'
                 }`}
-                title="View both Care Plans side-by-side"
+                title="View all Care Plans side-by-side"
               >
                 <Columns className="w-3.5 h-3.5" />
-                <span>Dual Split View</span>
+                <span>All Plans ({carePlans.length})</span>
               </button>
             </div>
           </div>
@@ -582,7 +674,7 @@ export default function App() {
             <div className="flex justify-end items-center gap-3">
               <button
                 type="button"
-                onClick={() => setActiveTab('plan1')}
+                onClick={() => setActiveTab('plan-1')}
                 className="px-5 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 hover:from-blue-700 hover:to-sky-700 text-white font-bold text-xs rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
               >
                 <span>Proceed to Care Plan #1 Editor</span>
@@ -677,7 +769,7 @@ export default function App() {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('plan1')}
+                onClick={() => setActiveTab('plan-1')}
                 className="px-5 py-2.5 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap"
               >
                 <span>Go to Care Plan #1</span>
@@ -687,95 +779,120 @@ export default function App() {
           </div>
         )}
 
-        {/* View Section 2: Care Plan 1 */}
-        {activeTab === 'plan1' && (
+        {/* View Section 2+: Dynamic Individual Care Plan Editor */}
+        {activeCarePlan && (
           <div className="space-y-6">
             <CarePlanEditor
-              plan={carePlan1}
-              planNumber={1}
-              onChange={setCarePlan1}
-              onOpenNandaSearch={() => handleOpenNandaSearch(1)}
-              onSwapWithOtherPlan={handleSwapPlans}
-              onClearPlan={handleClearPlan1}
+              plan={activeCarePlan}
+              planNumber={activePlanIndex + 1}
+              totalPlans={carePlans.length}
+              onChange={(updated) => handleUpdateCarePlan(activePlanIndex, updated)}
+              onOpenNandaSearch={() => handleOpenNandaSearch(activePlanIndex)}
+              onMoveUp={activePlanIndex > 0 ? () => handleMoveCarePlan(activePlanIndex, -1) : undefined}
+              onMoveDown={
+                activePlanIndex < carePlans.length - 1
+                  ? () => handleMoveCarePlan(activePlanIndex, 1)
+                  : undefined
+              }
+              onClearPlan={() => handleClearPlan(activePlanIndex)}
+              onRemovePlan={carePlans.length > 1 ? () => handleRemoveCarePlan(activePlanIndex) : undefined}
             />
 
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setActiveTab('demographics')}
-                className="px-4 py-2.5 text-xs font-bold text-indigo-700 hover:text-indigo-900 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-xl shadow-xs transition-all whitespace-nowrap"
-              >
-                ← Edit Inpatient Label Details
-              </button>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {activePlanIndex === 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('demographics')}
+                  className="px-4 py-2.5 text-xs font-bold text-indigo-700 hover:text-indigo-900 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-xl shadow-xs transition-all whitespace-nowrap"
+                >
+                  ← Edit Inpatient Label Details
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab(`plan-${activePlanIndex}`)}
+                  className="px-4 py-2.5 text-xs font-bold text-sky-700 hover:text-sky-900 bg-white hover:bg-sky-50 border border-sky-200 rounded-xl shadow-xs transition-all whitespace-nowrap"
+                >
+                  ← Back to Care Plan #{activePlanIndex}
+                </button>
+              )}
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('plan2')}
-                className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap"
-              >
-                <span>Proceed to Care Plan #2</span>
-                <span className="font-mono">→</span>
-              </button>
+              <div className="flex flex-wrap items-center gap-2.5">
+                {activePlanIndex < carePlans.length - 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab(`plan-${activePlanIndex + 2}`)}
+                    className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap"
+                  >
+                    <span>Proceed to Care Plan #{activePlanIndex + 2}</span>
+                    <span className="font-mono">→</span>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleAddCarePlan}
+                      className="px-4 py-2.5 bg-white hover:bg-emerald-50 text-emerald-700 font-bold text-xs rounded-xl border-2 border-dashed border-emerald-400 hover:border-emerald-500 shadow-xs transition-all flex items-center gap-1.5 whitespace-nowrap"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add Care Plan #{carePlans.length + 1}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPrintDocType('careplans');
+                        setPrintPreviewOpen(true);
+                      }}
+                      className="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap"
+                    >
+                      <Printer className="w-4 h-4" />
+                      <span>Open Printable Care Plans ({carePlans.length})</span>
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}
 
-        {/* View Section 3: Care Plan 2 */}
-        {activeTab === 'plan2' && (
-          <div className="space-y-6">
-            <CarePlanEditor
-              plan={carePlan2}
-              planNumber={2}
-              onChange={setCarePlan2}
-              onOpenNandaSearch={() => handleOpenNandaSearch(2)}
-              onSwapWithOtherPlan={handleSwapPlans}
-              onClearPlan={handleClearPlan2}
-            />
-
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setActiveTab('plan1')}
-                className="px-4 py-2.5 text-xs font-bold text-sky-700 hover:text-sky-900 bg-white hover:bg-sky-50 border border-sky-200 rounded-xl shadow-xs transition-all whitespace-nowrap"
-              >
-                ← Back to Care Plan #1
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setPrintDocType('careplans');
-                  setPrintPreviewOpen(true);
-                }}
-                className="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Open Printable Care Plans</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* View Section 4: Dual Split View (Large screens) */}
+        {/* View Section: All Care Plans Grid View (Large screens) */}
         {activeTab === 'split' && (
           <div className="space-y-6">
+            <div className="bg-gradient-to-r from-indigo-700 via-blue-700 to-teal-600 text-white px-5 py-4 rounded-2xl shadow-sm flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-sm sm:text-base font-extrabold tracking-tight">
+                  All Active Nursing Care Plans ({carePlans.length})
+                </h2>
+                <p className="text-xs text-sky-100/85">
+                  Compare, reorder, edit, or add unlimited NANDA-I care plans side-by-side
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleAddCarePlan}
+                className="px-4 py-2 bg-white hover:bg-emerald-50 text-teal-800 font-extrabold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap"
+              >
+                <Plus className="w-4 h-4 text-emerald-600" />
+                <span>Add Care Plan #{carePlans.length + 1}</span>
+              </button>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <CarePlanEditor
-                plan={carePlan1}
-                planNumber={1}
-                onChange={setCarePlan1}
-                onOpenNandaSearch={() => handleOpenNandaSearch(1)}
-                onSwapWithOtherPlan={handleSwapPlans}
-                onClearPlan={handleClearPlan1}
-              />
-              <CarePlanEditor
-                plan={carePlan2}
-                planNumber={2}
-                onChange={setCarePlan2}
-                onOpenNandaSearch={() => handleOpenNandaSearch(2)}
-                onSwapWithOtherPlan={handleSwapPlans}
-                onClearPlan={handleClearPlan2}
-              />
+              {carePlans.map((plan, idx) => (
+                <CarePlanEditor
+                  key={plan.id}
+                  plan={plan}
+                  planNumber={idx + 1}
+                  totalPlans={carePlans.length}
+                  onChange={(updated) => handleUpdateCarePlan(idx, updated)}
+                  onOpenNandaSearch={() => handleOpenNandaSearch(idx)}
+                  onMoveUp={idx > 0 ? () => handleMoveCarePlan(idx, -1) : undefined}
+                  onMoveDown={idx < carePlans.length - 1 ? () => handleMoveCarePlan(idx, 1) : undefined}
+                  onClearPlan={() => handleClearPlan(idx)}
+                  onRemovePlan={carePlans.length > 1 ? () => handleRemoveCarePlan(idx) : undefined}
+                />
+              ))}
             </div>
           </div>
         )}
@@ -786,15 +903,14 @@ export default function App() {
         isOpen={nandaModalOpen}
         onClose={() => setNandaModalOpen(false)}
         onSelectNanda={handleApplyNanda}
-        currentDiagnosis={nandaTargetPlan === 1 ? carePlan1.diagnosis : carePlan2.diagnosis}
+        currentDiagnosis={carePlans[nandaTargetPlanIndex]?.diagnosis || ''}
       />
 
       <PrintPreviewModal
         isOpen={printPreviewOpen}
         onClose={() => setPrintPreviewOpen(false)}
         patient={patient}
-        carePlan1={carePlan1}
-        carePlan2={carePlan2}
+        carePlans={carePlans}
         printScope={printScope}
         onPrintScopeChange={setPrintScope}
         activeDocType={printDocType}
@@ -821,26 +937,18 @@ export default function App() {
             <PrintableBedsideCardSheet patient={patient} isPrintOnly={true} />
           </div>
         )}
-        {(printDocType === 'careplans' || printDocType === 'both_types') && (
-          <>
-            {(printScope === 'both' || printScope === 'plan1') && (
-              <PrintableCarePlan
-                patient={patient}
-                carePlan={carePlan1}
-                planNumber={1}
-                totalPlans={printScope === 'both' ? 2 : 1}
-              />
-            )}
-            {(printScope === 'both' || printScope === 'plan2') && (
-              <PrintableCarePlan
-                patient={patient}
-                carePlan={carePlan2}
-                planNumber={2}
-                totalPlans={printScope === 'both' ? 2 : 1}
-              />
-            )}
-          </>
-        )}
+        {(printDocType === 'careplans' || printDocType === 'both_types') &&
+          selectedPlansForPrint.map(({ plan, planNumber }, idx) => (
+            <PrintableCarePlan
+              key={plan.id}
+              patient={patient}
+              carePlan={plan}
+              planNumber={planNumber}
+              totalPlans={carePlans.length}
+              pageNumber={idx + 1}
+              totalPages={selectedPlansForPrint.length}
+            />
+          ))}
       </div>
     </div>
   );

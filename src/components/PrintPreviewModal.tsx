@@ -16,25 +16,32 @@ import {
 } from 'lucide-react';
 
 export type PrintDocumentType = 'careplans' | 'bedside' | 'both_types';
+export type PrintCarePlanScope = 'all' | number;
 
 interface PrintPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   patient: PatientDemographics;
-  carePlan1: NursingCarePlan;
-  carePlan2: NursingCarePlan;
-  printScope: 'both' | 'plan1' | 'plan2';
-  onPrintScopeChange: (scope: 'both' | 'plan1' | 'plan2') => void;
+  carePlans: NursingCarePlan[];
+  printScope: PrintCarePlanScope;
+  onPrintScopeChange: (scope: PrintCarePlanScope) => void;
   activeDocType?: PrintDocumentType;
   onDocTypeChange?: (docType: PrintDocumentType) => void;
 }
+
+const PLAN_PREVIEW_ACCENTS = [
+  { btn: 'bg-sky-500/40 text-white', label: 'text-sky-300', sub: 'text-sky-200/80', border: 'border-sky-400/30' },
+  { btn: 'bg-violet-500/40 text-white', label: 'text-violet-300', sub: 'text-violet-200/80', border: 'border-violet-400/30' },
+  { btn: 'bg-emerald-500/40 text-white', label: 'text-emerald-300', sub: 'text-emerald-200/80', border: 'border-emerald-400/30' },
+  { btn: 'bg-amber-500/40 text-white', label: 'text-amber-300', sub: 'text-amber-200/80', border: 'border-amber-400/30' },
+  { btn: 'bg-rose-500/40 text-white', label: 'text-rose-300', sub: 'text-rose-200/80', border: 'border-rose-400/30' },
+];
 
 export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
   isOpen,
   onClose,
   patient,
-  carePlan1,
-  carePlan2,
+  carePlans,
   printScope,
   onPrintScopeChange,
   activeDocType = 'bedside',
@@ -57,6 +64,15 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
   const handlePrint = () => {
     window.print();
   };
+
+  const selectedPlans =
+    printScope === 'all'
+      ? carePlans.map((plan, idx) => ({ plan, planNumber: idx + 1 }))
+      : carePlans
+          .map((plan, idx) => ({ plan, planNumber: idx + 1 }))
+          .filter((item) => item.planNumber === printScope);
+
+  const totalPlanPages = selectedPlans.length;
 
   return (
     <div
@@ -115,7 +131,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
                 }`}
               >
                 <FileText className="w-3.5 h-3.5" />
-                <span>Care Plans (A4)</span>
+                <span>Care Plans ({carePlans.length})</span>
               </button>
 
               <button
@@ -134,40 +150,36 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
 
             {/* Scope Selection (When Care Plans are visible) */}
             {(currentDocType === 'careplans' || currentDocType === 'both_types') && (
-              <div className="bg-slate-950/60 p-1 rounded-xl border border-white/15 flex items-center text-xs gap-0.5">
+              <div className="bg-slate-950/60 p-1 rounded-xl border border-white/15 flex flex-wrap items-center text-xs gap-0.5">
                 <button
                   type="button"
-                  onClick={() => onPrintScopeChange('both')}
+                  onClick={() => onPrintScopeChange('all')}
                   className={`px-2.5 py-1 rounded-lg font-bold transition-all whitespace-nowrap ${
-                    printScope === 'both'
+                    printScope === 'all'
                       ? 'bg-white/20 text-white shadow-xs'
                       : 'text-sky-200/75 hover:text-white'
                   }`}
                 >
-                  Both Plans
+                  All Plans ({carePlans.length})
                 </button>
-                <button
-                  type="button"
-                  onClick={() => onPrintScopeChange('plan1')}
-                  className={`px-2.5 py-1 rounded-lg font-bold transition-all whitespace-nowrap ${
-                    printScope === 'plan1'
-                      ? 'bg-sky-500/40 text-white shadow-xs'
-                      : 'text-sky-200/75 hover:text-white'
-                  }`}
-                >
-                  Plan 1
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onPrintScopeChange('plan2')}
-                  className={`px-2.5 py-1 rounded-lg font-bold transition-all whitespace-nowrap ${
-                    printScope === 'plan2'
-                      ? 'bg-violet-500/40 text-white shadow-xs'
-                      : 'text-sky-200/75 hover:text-white'
-                  }`}
-                >
-                  Plan 2
-                </button>
+                {carePlans.map((plan, idx) => {
+                  const planNum = idx + 1;
+                  const accent = PLAN_PREVIEW_ACCENTS[idx % PLAN_PREVIEW_ACCENTS.length];
+                  return (
+                    <button
+                      key={plan.id}
+                      type="button"
+                      onClick={() => onPrintScopeChange(planNum)}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-all whitespace-nowrap ${
+                        printScope === planNum
+                          ? `${accent.btn} shadow-xs`
+                          : 'text-sky-200/75 hover:text-white'
+                      }`}
+                    >
+                      Plan {planNum}
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -261,12 +273,8 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
               {currentDocType === 'bedside'
                 ? '1 Page (Bedside & Door Sheet)'
                 : currentDocType === 'careplans'
-                ? printScope === 'both'
-                  ? '2 Pages Total'
-                  : '1 Page Total'
-                : printScope === 'both'
-                ? '3 Pages Total (Care Plans + Bedside Sheet)'
-                : '2 Pages Total'}
+                ? `${totalPlanPages} ${totalPlanPages === 1 ? 'Page' : 'Pages'} Total`
+                : `${totalPlanPages + 1} Pages Total (${totalPlanPages} Care ${totalPlanPages === 1 ? 'Plan' : 'Plans'} + Bedside Sheet)`}
             </span>
           </div>
         </div>
@@ -294,43 +302,29 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
               </div>
             )}
 
-            {/* 2. Care Plan 1 */}
+            {/* 2. Dynamic Care Plans */}
             {(currentDocType === 'careplans' || currentDocType === 'both_types') &&
-              (printScope === 'both' || printScope === 'plan1') && (
-                <div className="w-full flex flex-col items-center">
-                  <div className="w-full max-w-[210mm] text-xs font-bold text-sky-300 mb-2 flex items-center justify-between px-1">
-                    <span>Page 1: Nursing Care Plan #1 (A4 Portrait)</span>
-                    <span className="text-sky-200/80 font-mono text-[11px]">Upper-Right Inpatient Label Included</span>
+              selectedPlans.map(({ plan, planNumber }, idx) => {
+                const accent = PLAN_PREVIEW_ACCENTS[(planNumber - 1) % PLAN_PREVIEW_ACCENTS.length];
+                return (
+                  <div key={plan.id} className="w-full flex flex-col items-center">
+                    <div className={`w-full max-w-[210mm] text-xs font-bold mb-2 flex items-center justify-between px-1 ${accent.label}`}>
+                      <span>Page {idx + 1}: Nursing Care Plan #{planNumber} (A4 Portrait)</span>
+                      <span className={`font-mono text-[11px] ${accent.sub}`}>Upper-Right Inpatient Label Included</span>
+                    </div>
+                    <div className={`w-full max-w-[210mm] bg-white rounded-xs shadow-2xl overflow-hidden border ${accent.border}`}>
+                      <PrintableCarePlan
+                        patient={patient}
+                        carePlan={plan}
+                        planNumber={planNumber}
+                        totalPlans={carePlans.length}
+                        pageNumber={idx + 1}
+                        totalPages={totalPlanPages}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full max-w-[210mm] bg-white rounded-xs shadow-2xl overflow-hidden border border-sky-400/30">
-                    <PrintableCarePlan
-                      patient={patient}
-                      carePlan={carePlan1}
-                      planNumber={1}
-                      totalPlans={printScope === 'both' ? 2 : 1}
-                    />
-                  </div>
-                </div>
-              )}
-
-            {/* 3. Care Plan 2 */}
-            {(currentDocType === 'careplans' || currentDocType === 'both_types') &&
-              (printScope === 'both' || printScope === 'plan2') && (
-                <div className="w-full flex flex-col items-center">
-                  <div className="w-full max-w-[210mm] text-xs font-bold text-violet-300 mb-2 flex items-center justify-between px-1">
-                    <span>Page 2: Nursing Care Plan #2 (A4 Portrait)</span>
-                    <span className="text-violet-200/80 font-mono text-[11px]">Upper-Right Inpatient Label Included</span>
-                  </div>
-                  <div className="w-full max-w-[210mm] bg-white rounded-xs shadow-2xl overflow-hidden border border-violet-400/30">
-                    <PrintableCarePlan
-                      patient={patient}
-                      carePlan={carePlan2}
-                      planNumber={2}
-                      totalPlans={printScope === 'both' ? 2 : 1}
-                    />
-                  </div>
-                </div>
-              )}
+                );
+              })}
           </div>
         </div>
       </div>

@@ -30,12 +30,18 @@ export const SavedRecordsModal: React.FC<SavedRecordsModalProps> = ({
 
   if (!isOpen) return null;
 
+  const getRecordPlans = (rec: InpatientRecord) =>
+    rec.carePlans && rec.carePlans.length > 0
+      ? rec.carePlans
+      : [rec.carePlan1, rec.carePlan2].filter(Boolean);
+
   const filtered = savedRecords.filter((rec) => {
     const term = search.toLowerCase();
     const wardStr = (rec.patient.wardNumber || '').toLowerCase();
     const bedStr = (rec.patient.bedNumber || '').toLowerCase();
     const wardBedStr = (rec.patient.wardAndBedNumber || '').toLowerCase();
     const allergyStr = (rec.patient.allergies || '').toLowerCase();
+    const plans = getRecordPlans(rec);
 
     return (
       rec.patient.fullName.toLowerCase().includes(term) ||
@@ -44,8 +50,7 @@ export const SavedRecordsModal: React.FC<SavedRecordsModalProps> = ({
       bedStr.includes(term) ||
       wardBedStr.includes(term) ||
       allergyStr.includes(term) ||
-      rec.carePlan1.diagnosis.toLowerCase().includes(term) ||
-      rec.carePlan2.diagnosis.toLowerCase().includes(term)
+      plans.some((p) => (p.diagnosis || '').toLowerCase().includes(term))
     );
   });
 
@@ -70,7 +75,7 @@ export const SavedRecordsModal: React.FC<SavedRecordsModalProps> = ({
         const parsed = JSON.parse(event.target?.result as string);
         if (Array.isArray(parsed)) {
           onImportRecords(parsed);
-        } else if (parsed && parsed.patient && parsed.carePlan1) {
+        } else if (parsed && parsed.patient && (parsed.carePlans || parsed.carePlan1)) {
           onImportRecords([parsed]);
         }
       } catch (err) {
@@ -268,23 +273,32 @@ export const SavedRecordsModal: React.FC<SavedRecordsModalProps> = ({
                     </div>
 
                     {/* Care Plans Snapshot */}
-                    {(record.carePlan1.diagnosis || record.carePlan2.diagnosis) && (
-                      <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
-                        {record.carePlan1.diagnosis && (
-                          <span className="text-sky-800 font-semibold">
-                            #1: {record.carePlan1.diagnosis}
-                          </span>
-                        )}
-                        {record.carePlan1.diagnosis && record.carePlan2.diagnosis && (
-                          <span className="text-slate-300">/</span>
-                        )}
-                        {record.carePlan2.diagnosis && (
-                          <span className="text-violet-800 font-semibold">
-                            #2: {record.carePlan2.diagnosis}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    {(() => {
+                      const plans = getRecordPlans(record);
+                      const filledPlans = plans
+                        .map((p, i) => ({ diagnosis: p.diagnosis, num: i + 1 }))
+                        .filter((p) => p.diagnosis);
+                      if (filledPlans.length === 0) return null;
+                      const diagnosisColors = [
+                        'text-sky-800',
+                        'text-violet-800',
+                        'text-emerald-800',
+                        'text-amber-800',
+                        'text-rose-800',
+                      ];
+                      return (
+                        <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
+                          {filledPlans.map((item, idx) => (
+                            <React.Fragment key={item.num}>
+                              {idx > 0 && <span className="text-slate-300">/</span>}
+                              <span className={`${diagnosisColors[(item.num - 1) % diagnosisColors.length]} font-semibold`}>
+                                #{item.num}: {item.diagnosis}
+                              </span>
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   <div className="flex items-center gap-2">
